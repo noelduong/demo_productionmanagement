@@ -60,6 +60,11 @@ for row_idx, row in enumerate(data_rows):
                 po_month = f"2026-{int(p):02d}"
                 break
                 
+        status = row[25].strip()
+        if status.lower() == 'cancel':
+            # Skip cancelled POs entirely
+            continue
+                
         payload = {
             "action": "saveReceiving",
             "data": {

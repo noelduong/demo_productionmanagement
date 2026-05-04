@@ -83,7 +83,8 @@ for row_idx, row in enumerate(data_rows):
         status = row[25].strip()
         note = row[1].strip() + " - " + row[2].strip()
         if status.lower() == 'cancel':
-            note = "[CANCELLED] " + note
+            # Skip cancelled POs entirely
+            continue
         
         payload = {
             "action": "saveOrder",

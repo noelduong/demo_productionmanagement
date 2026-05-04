@@ -713,3 +713,66 @@ function doGet(e) {
     return ContentService.createTextOutput(JSON.stringify({success: false, message: err.toString()})).setMimeType(ContentService.MimeType.JSON);
   }
 }
+
+/**
+ * HÀM CHẠY 1 LẦN: Dọn dẹp các đơn hàng bị Cancel do lỗi import trước đó
+ * Hãy chọn hàm này trong danh sách và bấm "Chạy" trong trình soạn thảo Apps Script.
+ */
+function cleanCancelledData() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const cancelledPOs = new Set();
+  
+  // 1. Dọn dẹp trong data_order
+  const orderSheet = ss.getSheetByName("data_order");
+  if (orderSheet) {
+    const orderData = orderSheet.getDataRange().getValues();
+    // Chạy ngược từ dưới lên để xóa dòng an toàn
+    for (let i = orderData.length - 1; i > 0; i--) {
+      const orderNo = String(orderData[i][1] || "").trim();
+      const statusVai = String(orderData[i][12] || "").toLowerCase();
+      const statusBo = String(orderData[i][17] || "").toLowerCase();
+      const statusNpl = String(orderData[i][18] || "").toLowerCase();
+      const note = String(orderData[i][20] || "").toLowerCase();
+      
+      if (statusVai === 'cancel' || statusBo === 'cancel' || statusNpl === 'cancel' || note.includes('cancel')) {
+        if (orderNo) cancelledPOs.add(orderNo);
+        orderSheet.deleteRow(i + 1);
+      }
+    }
+  }
+
+  // 2. Dọn dẹp trong data_order_details
+  const detailSheet = ss.getSheetByName("data_order_details");
+  if (detailSheet) {
+    const detailData = detailSheet.getDataRange().getValues();
+    for (let i = detailData.length - 1; i > 0; i--) {
+      const orderNo = String(detailData[i][0] || "").trim();
+      const statusVai = String(detailData[i][10] || "").toLowerCase();
+      const statusBo = String(detailData[i][11] || "").toLowerCase();
+      const statusNpl = String(detailData[i][12] || "").toLowerCase();
+      const note = String(detailData[i][9] || "").toLowerCase();
+      
+      if (statusVai === 'cancel' || statusBo === 'cancel' || statusNpl === 'cancel' || note.includes('cancel') || cancelledPOs.has(orderNo)) {
+        if (orderNo) cancelledPOs.add(orderNo);
+        detailSheet.deleteRow(i + 1);
+      }
+    }
+  }
+  
+  // 3. Dọn dẹp trong data_receiving
+  const receivingSheet = ss.getSheetByName("data_receiving");
+  if (receivingSheet) {
+    const receivingData = receivingSheet.getDataRange().getValues();
+    for (let i = receivingData.length - 1; i > 0; i--) {
+      const orderNo = String(receivingData[i][1] || "").trim();
+      // data_receiving[i][9] là Ghi chú nhận hàng, data_receiving[i][1] là orderNo
+      const note = String(receivingData[i][9] || "").toLowerCase();
+      
+      if (note.includes('cancel') || cancelledPOs.has(orderNo)) {
+        receivingSheet.deleteRow(i + 1);
+      }
+    }
+  }
+}
+
+

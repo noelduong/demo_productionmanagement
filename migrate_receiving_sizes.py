@@ -36,6 +36,11 @@ for row_idx, row in enumerate(data_rows):
         partner = row[12].strip()
         order_no = f"{stt_padded}/2026/PLMR-{partner}"
         
+        status = row[10].strip()
+        if 'cancel' in status.lower():
+            # Skip cancelled POs entirely
+            continue
+        
         product_name = row[1].strip()
         batch_name = row[2].strip() # LẦN 1
         
