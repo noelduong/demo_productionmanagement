@@ -6194,7 +6194,9 @@ function renderDashboardCharts(month, year) {
           const haoHut = row.c[11] && row.c[11].v !== null ? Number(row.c[11].v) : 0;
           const isSizeLabel = /SIZE|MẠC DỆT|NHÃN ÉP|HEM TAG|HEATSEAL/i.test(nplName) ||
                               /SIZE|MẠC DỆT|NHÃN ÉP|HEM TAG|HEATSEAL/i.test(moTa);
-          allBOMData[currentSection].push({ stt: colC, nplName, dvt, moTa, nguonCung, dinhMuc, haoHut, isSizeLabel });
+          const isBarcode = /MÃ VẠCH|BARCODE|TEM GIÁ/i.test(nplName) || 
+                            /MÃ VẠCH|BARCODE|TEM GIÁ/i.test(moTa);
+          allBOMData[currentSection].push({ stt: colC, nplName, dvt, moTa, nguonCung, dinhMuc, haoHut, isSizeLabel, isBarcode });
         });
       } catch (err) { console.error('processBOMData error:', err); }
     }
@@ -6313,7 +6315,32 @@ function renderDashboardCharts(month, year) {
           <tbody>`;
       items.forEach((item, idx) => {
         const wf = 1 + (item.haoHut || 0);
-        if (item.isSizeLabel) {
+        if (item.isBarcode) {
+          bomPOItems.forEach(poIt => {
+            const c = poIt["Màu"] || "N/A";
+            const pName = poIt["Tên SP"] || "SP";
+            const label = `${pName} - ${c}`;
+            
+            const sd = validSizes.map(s => {
+               const v = Number(poIt["Size " + s.size]) || 0;
+               return Math.ceil(v * item.dinhMuc * wf);
+            });
+            const tot = sd.reduce((a, b) => a + b, 0);
+            
+            if (tot > 0) {
+               html += `<tr style="background:#f0fdfa;">
+                <td>${idx+1}</td>
+                <td class="text-left"><strong>${item.nplName}</strong><br><span style="background:#0d9488;color:white;padding:2px 6px;border-radius:4px;font-size:0.65rem;font-weight:700;">${label}</span></td>
+                <td>${item.dvt}</td>
+                <td>${item.nguonCung}</td>
+                <td>${item.dinhMuc}</td>
+                <td>${(item.haoHut*100).toFixed(0)}%</td>
+                ${sd.map(q => `<td style="text-align:center;font-weight:700;color:#0f766e;background:#ccfbf1;border-bottom:1px solid #99f6e4;">${q > 0 ? q.toLocaleString('vi-VN') : '-'}</td>`).join('')}
+                <td style="font-weight:700;color:var(--primary);text-align:center;font-size:1.05em;background:#e0e7ff;">${tot.toLocaleString('vi-VN')}</td>
+              </tr>`;
+            }
+          });
+        } else if (item.isSizeLabel) {
           const sd = validSizes.map(s => Math.ceil(s.qty * item.dinhMuc * wf));
           const tot = sd.reduce((a, b) => a + b, 0);
           html += `<tr style="background:#fffbeb;">
@@ -6323,8 +6350,8 @@ function renderDashboardCharts(month, year) {
             <td>${item.nguonCung}</td>
             <td>${item.dinhMuc}</td>
             <td>${(item.haoHut*100).toFixed(0)}%</td>
-            ${sd.map(q => `<td style="text-align:center;font-weight:700;color:#b45309;background:#fef3c7;">${q.toLocaleString('vi-VN')}</td>`).join('')}
-            <td style="font-weight:700;color:var(--primary);text-align:center;font-size:1.05em;">${tot.toLocaleString('vi-VN')}</td>
+            ${sd.map(q => `<td style="text-align:center;font-weight:700;color:#b45309;background:#fef3c7;border-bottom:1px solid #fde68a;">${q > 0 ? q.toLocaleString('vi-VN') : '-'}</td>`).join('')}
+            <td style="font-weight:700;color:var(--primary);text-align:center;font-size:1.05em;background:#e0e7ff;">${tot.toLocaleString('vi-VN')}</td>
           </tr>`;
         } else {
           const needed = Math.ceil(totalQty * item.dinhMuc * wf);
