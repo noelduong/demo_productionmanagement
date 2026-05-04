@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import ssl
 
 csv_file = 'PP_ KHSX TOTAL 26 - DATA Đặt Hàng 2026.csv'
-url = 'https://script.google.com/macros/s/AKfycbx0vjv3WWF9GXxA2zS16kNkLR0Nn9sdIfSUTIB7smfQbPhLRSX27P78OVFBJEPM9nJ9TQ/exec'
+url = 'https://script.google.com/macros/s/AKfycbxXe57opBzPLN8M7TwA_bI0qPtq4ZwLe8N2bAwGQ_bXzdbszB-zZ1oDhBQ2fRJ3xAPIag/exec'
 
 ctx = ssl.create_default_context()
 ctx.check_hostname = False
