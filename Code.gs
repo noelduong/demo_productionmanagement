@@ -773,6 +773,7 @@ function cleanCancelledData() {
       }
     }
   }
+}
 
 
 
