@@ -4008,6 +4008,20 @@ function renderDashboardCharts(month, year) {
       const allDataReversed = data.slice().reverse();
       allDataReversed.forEach(row => {
         const po = row["Mã đơn hàng"] || "KHÔNG RÕ";
+        
+        // Skip cancelled POs
+        const orderInfo = allOrdersHistory.find(o => o.orderNo === po);
+        if (orderInfo) {
+          const orderVai = String(orderInfo.statusVai || "").toLowerCase();
+          const orderBo = String(orderInfo.statusBo || "").toLowerCase();
+          const orderNpl = String(orderInfo.statusNpl || "").toLowerCase();
+          const orderNote = String(orderInfo.syncNote || "").toLowerCase();
+          
+          if (orderVai === 'cancel' || orderBo === 'cancel' || orderNpl === 'cancel' || orderNote.includes('cancel')) {
+              return; // Ignore canceled POs
+          }
+        }
+        
         if (!grouped[po]) {
           grouped[po] = {
             po: po,
