@@ -5835,7 +5835,7 @@ function renderDashboardCharts(month, year) {
       
       Promise.all([
         fetch(WEB_APP_URL + "?action=getHistory").then(r => r.json()),
-        fetch(WEB_APP_URL + "?action=getReceivedPOs").then(r => r.json())
+        fetch(WEB_APP_URL + "?action=getReceivingHistory").then(r => r.json())
       ])
         .then(async ([resHistory, resReceived]) => {
           if (!resHistory.success || !resHistory.data || resHistory.data.length === 0) {
@@ -5843,7 +5843,26 @@ function renderDashboardCharts(month, year) {
             return;
           }
           allOrdersHistory = resHistory.data;
-          const receivedPOs = (resReceived.success && resReceived.data) ? resReceived.data : [];
+          
+          const receivingHistory = (resReceived.success && resReceived.data) ? resReceived.data : [];
+          const receivedMap = {};
+          receivingHistory.forEach(r => {
+             const orderNo = String(r["Mã đơn hàng"] || r.orderNo || "").trim();
+             if (!orderNo) return;
+             // Cột "Ngày nhập"
+             let dStr = r["Ngày nhập"];
+             // parse dd/mm/yyyy if needed
+             let d = new Date(dStr);
+             if (isNaN(d.getTime()) && typeof dStr === 'string') {
+               const parts = dStr.split('/');
+               if (parts.length === 3) d = new Date(parts[2], parts[1]-1, parts[0]);
+             }
+             if (!isNaN(d.getTime())) {
+                if (!receivedMap[orderNo] || receivedMap[orderNo] < d) {
+                   receivedMap[orderNo] = d;
+                }
+             }
+          });
           
           try {
             // First try the optimized backend endpoint
@@ -5857,7 +5876,8 @@ function renderDashboardCharts(month, year) {
                });
                const allOrders = resHistory.data.map(o => ({
                  ...o,
-                 isReceived: receivedPOs.includes(o.orderNo),
+                 isReceived: !!receivedMap[String(o.orderNo).trim()],
+                 receivedDate: receivedMap[String(o.orderNo).trim()],
                  details: detailsMap[String(o.orderNo).trim()] || []
                }));
                renderMonthlyPlan(allOrders, area);
@@ -5880,12 +5900,14 @@ function renderDashboardCharts(month, year) {
                 .then(r => r.json())
                 .then(d => ({ 
                    ...o,
-                   isReceived: receivedPOs.includes(o.orderNo),
+                   isReceived: !!receivedMap[String(o.orderNo).trim()],
+                   receivedDate: receivedMap[String(o.orderNo).trim()],
                    details: d.success ? d.data : [] 
                 }))
                 .catch(() => ({ 
                    ...o,
-                   isReceived: false, 
+                   isReceived: !!receivedMap[String(o.orderNo).trim()],
+                   receivedDate: receivedMap[String(o.orderNo).trim()],
                    details: [] 
                 }))
             );
@@ -5906,7 +5928,8 @@ function renderDashboardCharts(month, year) {
       'Prod': { label: 'ĐANG SẢN XUẤT', color: '#3b82f6', bg: '#eff6ff' },
       'Warning': { label: 'SẮP TRỄ HẠN', color: '#f59e0b', bg: '#fef3c7' },
       'Overdue': { label: 'TRỄ HẠN', color: '#ef4444', bg: '#fef2f2' },
-      'Done': { label: 'ĐÃ NHẬP KHO', color: '#22c55e', bg: '#f0fdf4' }
+      'Done': { label: 'ĐÃ NHẬP KHO', color: '#22c55e', bg: '#f0fdf4' },
+      'DoneLate': { label: 'ĐÃ NHẬP KHO (TRỄ HẠN)', color: '#d97706', bg: '#fef3c7' }
     };
 
     function renderMonthlyPlan(allOrders, area) {
@@ -5977,11 +6000,22 @@ function renderDashboardCharts(month, year) {
           const targetDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
           const daysLeft = (targetDate.getTime() - todayDate.getTime()) / (1000 * 3600 * 24);
           
-          if (order.isReceived && daysLeft <= 0) {
-            statusKey = 'Done';
-          } else if (!order.isReceived && daysLeft <= 0) {
+          if (order.isReceived) {
+             let isLate = false;
+             if (order.receivedDate) {
+                const recDate = new Date(order.receivedDate.getFullYear(), order.receivedDate.getMonth(), order.receivedDate.getDate());
+                if (recDate.getTime() > targetDate.getTime()) {
+                   isLate = true;
+                }
+             } else if (daysLeft < 0) {
+                // Fallback nếu không parse được ngày nhận nhưng đã trễ so với hôm nay
+                isLate = true;
+             }
+             
+             statusKey = isLate ? 'DoneLate' : 'Done';
+          } else if (daysLeft <= 0) {
             statusKey = 'Overdue';
-          } else if (!order.isReceived && statusKey === 'Pending' && daysLeft <= 10) {
+          } else if (statusKey === 'Pending' && daysLeft <= 10) {
             statusKey = 'Warning';
           }
 
