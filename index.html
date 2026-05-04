@@ -5842,7 +5842,8 @@ function renderDashboardCharts(month, year) {
                  detailsMap[orderNo].push(d);
                });
                const allOrders = resHistory.data.map(o => ({
-                 orderNo: o.orderNo, partnerName: o.partnerName, creatorName: o.creatorName, total: o.total, poMonth: o.poMonth, isReceived: receivedPOs.includes(o.orderNo),
+                 ...o,
+                 isReceived: receivedPOs.includes(o.orderNo),
                  details: detailsMap[String(o.orderNo).trim()] || []
                }));
                renderMonthlyPlan(allOrders, area);
@@ -5864,10 +5865,15 @@ function renderDashboardCharts(month, year) {
               fetch(WEB_APP_URL + "?action=getOrderDetails&orderNo=" + encodeURIComponent(o.orderNo))
                 .then(r => r.json())
                 .then(d => ({ 
-                   orderNo: o.orderNo, partnerName: o.partnerName, creatorName: o.creatorName, total: o.total, poMonth: o.poMonth, isReceived: receivedPOs.includes(o.orderNo),
+                   ...o,
+                   isReceived: receivedPOs.includes(o.orderNo),
                    details: d.success ? d.data : [] 
                 }))
-                .catch(() => ({ orderNo: o.orderNo, partnerName: o.partnerName, creatorName: o.creatorName, total: o.total, poMonth: o.poMonth, isReceived: false, details: [] }))
+                .catch(() => ({ 
+                   ...o,
+                   isReceived: false, 
+                   details: [] 
+                }))
             );
             const chunkResults = await Promise.all(promises);
             allOrders.push(...chunkResults);
