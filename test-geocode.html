@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Geocode - Chuyển địa chỉ thành tọa độ</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #151c32;
+      margin-bottom: 5px;
+    }
+    .subtitle {
+      color: #64748b;
+      margin-bottom: 25px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      box-sizing: border-box;
+      margin-bottom: 15px;
+    }
+    button {
+      background: #151c32;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #000;
+    }
+    button:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+    .result {
+      margin-top: 25px;
+      padding: 20px;
+      border-radius: 8px;
+      display: none;
+    }
+    .result.success {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      display: block;
+    }
+    .result.error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      display: block;
+    }
+    .coord-row {
+      display: flex;
+      gap: 20px;
+      margin: 15px 0;
+    }
+    .coord-box {
+      flex: 1;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      text-align: center;
+    }
+    .coord-label {
+      font-size: 12px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+    .coord-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #151c32;
+      font-family: 'Courier New', monospace;
+    }
+    .map-links {
+      margin-top: 15px;
+    }
+    .map-links a {
+      display: inline-block;
+      margin-right: 10px;
+      margin-bottom: 8px;
+      padding: 8px 14px;
+      background: #e0e7ff;
+      color: #4338ca;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .map-links a:hover {
+      background: #c7d2fe;
+    }
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #fff;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🗺️ Geocode Test</h1>
+    <p class="subtitle">Chuyển địa chỉ tiếng Việt thành tọa độ Latitude / Longitude</p>
+
+    <label for="addressInput">Nhập địa chỉ:</label>
+    <input
+      type="text"
+      id="addressInput"
+      value="161D/104/23G lạc long quân, phường bình thới, hồ chí minh"
+      placeholder="VD: 123 Nguyễn Văn A, Quận 1, TP.HCM"
+    />
+
+    <button id="searchBtn" onclick="doGeocode()">
+      <span id="btnText">Tìm tọa độ</span>
+    </button>
+
+    <div id="resultBox" class="result"></div>
+  </div>
+
+  <script>
+    async function doGeocode() {
+      const btn = document.getElementById('searchBtn');
+      const btnText = document.getElementById('btnText');
+      const resultBox = document.getElementById('resultBox');
+      const address = document.getElementById('addressInput').value.trim();
+
+      if (!address) {
+        resultBox.className = 'result error';
+        resultBox.innerHTML = '<strong>⚠️ Vui lòng nhập địa chỉ!</strong>';
+        return;
+      }
+
+      btn.disabled = true;
+      btnText.innerHTML = '<span class="spinner"></span> Đang tìm...';
+      resultBox.className = 'result';
+      resultBox.innerHTML = '';
+
+      try {
+        // Sử dụng Nominatim (OpenStreetMap) - MIỄN PHÍ, không cần API key
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1&countrycodes=vn`;
+
+        const response = await fetch(url, {
+          headers: {
+            'Accept-Language': 'vi',
+            'User-Agent': 'Polomanor-Geocoder/1.0'
+          }
+        });
+
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+          const r = data[0];
+          const lat = parseFloat(r.lat);
+          const lon = parseFloat(r.lon);
+
+          resultBox.className = 'result success';
+          resultBox.innerHTML = `
+            <h3 style="margin-top:0;color:#166534;">✅ Tìm thấy tọa độ!</h3>
+            <div class="coord-row">
+              <div class="coord-box">
+                <div class="coord-label">Vĩ độ (Latitude)</div>
+                <div class="coord-value">${lat.toFixed(6)}</div>
+              </div>
+              <div class="coord-box">
+                <div class="coord-label">Kinh độ (Longitude)</div>
+                <div class="coord-value">${lon.toFixed(6)}</div>
+              </div>
+            </div>
+            <p><strong>Địa chỉ đầy đủ:</strong> ${r.display_name}</p>
+            <div class="map-links">
+              <a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank">📍 Mở Google Maps</a>
+              <a href="https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=18/${lat}/${lon}" target="_blank">🗺️ OpenStreetMap</a>
+            </div>
+          `;
+        } else {
+          resultBox.className = 'result error';
+          resultBox.innerHTML = '<strong>❌ Không tìm thấy tọa độ cho địa chỉ này.</strong><br>Hãy thử nhập rõ ràng hơn (VD: thêm "Thành phố Hồ Chí Minh"). ';
+        }
+      } catch (err) {
+        resultBox.className = 'result error';
+        resultBox.innerHTML = '<strong>❌ Lỗi kết nối:</strong> ' + err.message + '<br><br><em>Gợi ý: Nếu đang dùng trình duyệt, hãy đảm bảo không bị chặn CORS. Hoặc thử chạy file <code>geocode.js</code> bằng Node.js.</em>';
+      } finally {
+        btn.disabled = false;
+        btnText.innerText = 'Tìm tọa độ';
+      }
+    }
+
+    // Cho phép nhấn Enter để search
+    document.getElementById('addressInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') doGeocode();
+    });
+  </script>
+</body>
+</html>
+

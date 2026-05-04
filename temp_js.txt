@@ -1,0 +1,16 @@
+function loadDashboardData() {
+      // Don't show generic loading if we can avoid it, but we can update text
+      Promise.all([fetch(WEB_APP_URL + "?action=getHistory").then(r => r.json()), fetch(WEB_APP_URL + "?action=getReceivingHistory").then(r => r.json())])
+      .then(([historyRes, receivingRes]) => {
+         const historyData = historyRes.data || [];
+         const receivingData = receivingRes.data || [];
+         
+         const today = new Date(); today.setHours(0,0,0,0);
+         
+         let totalPOs = historyData.length;
+         let totalOutput = 0;
+         let totalValue = 0;
+         let alertsCount = 0;
+         let onTimeCount = 0;
+         
+         let factoryStats = {}; // { partnerName: { poCount, value, onTimeCount, totalOutput } }

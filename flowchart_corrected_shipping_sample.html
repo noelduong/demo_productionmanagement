@@ -1,0 +1,540 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --border-radius-lg: 12px;
+    --color-border-secondary: #e5e7eb;
+    --color-border-tertiary: #f3f4f6;
+    --color-text-primary: #111827;
+    --color-text-secondary: #4b5563;
+    --color-text-success: #059669;
+    --color-background-secondary: #ffffff;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: #f9fafb;
+    color: var(--color-text-primary);
+  }
+
+  .wrap {
+    max-width: 1100px;
+    padding: 24px 16px;
+    margin: 0 auto;
+  }
+
+  .hdr {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 22px;
+    background: linear-gradient(135deg, rgba(24, 95, 165, 0.08) 0%, rgba(108, 190, 69, 0.08) 100%);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-border-secondary);
+  }
+
+  .hdr h1 {
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: var(--color-text-primary);
+  }
+
+  .hdr p {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+
+  .tov {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .tc {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: 12px;
+    text-align: center;
+    border-left: 4px solid;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .tc.b {
+    border-left-color: #6CBE45;
+  }
+
+  .tc.n {
+    border-left-color: #F99D23;
+  }
+
+  .tc.w {
+    border-left-color: #E24B4A;
+  }
+
+  .tc .tl {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+
+  .tc .td {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin: 4px 0;
+  }
+
+  .tc .tx {
+    font-size: 10px;
+    color: var(--color-text-secondary);
+  }
+
+  .stitle {
+    font-size: 14px;
+    font-weight: 500;
+    margin: 20px 0 12px;
+    color: var(--color-text-primary);
+  }
+
+  .rg {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+  }
+
+  .rc {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: 14px;
+    border-top: 4px solid;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .rc.crit {
+    border-top-color: #E24B4A;
+  }
+
+  .rc.hi {
+    border-top-color: #F99D23;
+  }
+
+  .rc.bo {
+    border-top-color: #7B4EA6;
+  }
+
+  .rc .rl {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 5px;
+  }
+
+  .rc .ri {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    margin-bottom: 4px;
+    line-height: 1.5;
+  }
+
+  .rc .rf {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    padding-top: 6px;
+    border-top: 1px solid var(--color-border-tertiary);
+    margin-top: 5px;
+  }
+
+  .rc .rf strong {
+    color: var(--color-text-primary);
+  }
+
+  @media(max-width:640px) {
+    .tov {
+      grid-template-columns: 1fr;
+    }
+
+    .rg {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="wrap">
+  <div class="hdr">
+    <h1>Merch Guide: Quy Trình May Mặc</h1>
+    <p>PLMR → Nhà Máy &nbsp;|&nbsp; 26-31 ngày &nbsp;|&nbsp; Flowchart đầy đủ</p>
+  </div>
+  <div class="tov">
+    <div class="tc b">
+      <div class="tl">Tốt nhất</div>
+      <div class="td">26-27 ngày</div>
+      <div class="tx">Vải + bo approved</div>
+    </div>
+    <div class="tc n">
+      <div class="tl">Bình thường</div>
+      <div class="td">28-29 ngày</div>
+      <div class="tx">Vải chỉnh sửa</div>
+    </div>
+    <div class="tc w">
+      <div class="tl">Xấu nhất</div>
+      <div class="td">42-43 ngày</div>
+      <div class="tx">Vải reject, reorder</div>
+    </div>
+  </div>
+
+  <svg viewBox="0 0 1150 1510" xmlns="http://www.w3.org/2000/svg"
+    style="width:100%;height:auto;display:block;margin-bottom:20px;">
+    <defs>
+      <marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+        <polygon points="0 0,9 3,0 6" style="fill:var(--color-border-secondary)" />
+      </marker>
+    </defs>
+    <style>
+      .nd {
+        fill: var(--color-background-secondary);
+        stroke-width: 2.5;
+      }
+
+      .m {
+        stroke: #185FA5;
+      }
+
+      .nm {
+        stroke: #5F5E5A;
+      }
+
+      .wt {
+        stroke: #0F6E56;
+        stroke-dasharray: 6, 3;
+      }
+
+      .ct {
+        stroke: #E24B4A;
+        stroke-width: 3;
+      }
+
+      .gn {
+        stroke: #6CBE45;
+        fill: rgba(108, 190, 69, 0.1);
+      }
+
+      .bo {
+        stroke: #7B4EA6;
+      }
+
+      .am {
+        stroke: #F99D23;
+        stroke-width: 2.5;
+      }
+
+      .tp {
+        fill: var(--color-text-primary);
+        font-size: 13px;
+        font-weight: 500;
+        font-family: var(--font-sans);
+      }
+
+      .ts {
+        fill: var(--color-text-secondary);
+        font-size: 11px;
+        font-family: var(--font-sans);
+      }
+
+      .tr {
+        font-size: 10px;
+        font-weight: 500;
+        font-family: var(--font-sans);
+      }
+
+      .rm {
+        fill: #185FA5;
+      }
+
+      .rn {
+        fill: #5F5E5A;
+      }
+
+      .rw {
+        fill: #0F6E56;
+      }
+
+      .rc {
+        fill: #E24B4A;
+      }
+
+      .rg {
+        fill: #6CBE45;
+      }
+
+      .rb {
+        fill: #7B4EA6;
+      }
+
+      .ra {
+        fill: #F99D23;
+      }
+
+      .al {
+        stroke: var(--color-border-secondary);
+        stroke-width: 2;
+        fill: none;
+        marker-end: url(#a);
+      }
+
+      .ad {
+        stroke: var(--color-border-secondary);
+        stroke-width: 1.5;
+        stroke-dasharray: 5, 4;
+        fill: none;
+        marker-end: url(#a);
+      }
+
+      .dv {
+        stroke: var(--color-border-secondary);
+        stroke-width: 1.5;
+        fill: none;
+      }
+    </style>
+
+    <!-- TRACK BACKGROUNDS (parallel zone) -->
+    <rect x="28" y="442" width="570" height="450" rx="8" fill="rgba(123,78,166,0.04)" stroke="rgba(123,78,166,0.2)"
+      stroke-width="1" />
+    <rect x="756" y="442" width="368" height="290" rx="8" fill="rgba(15,110,86,0.04)" stroke="rgba(15,110,86,0.2)"
+      stroke-width="1" />
+    <text x="313" y="898" text-anchor="middle" font-size="10"
+      style="fill:var(--color-text-secondary);opacity:.35;font-style:italic;">Bo dệt track</text>
+    <text x="940" y="730" text-anchor="middle" font-size="10"
+      style="fill:var(--color-text-secondary);opacity:.35;font-style:italic;">Duyệt vải track</text>
+
+    <!-- ─── SHARED START ─── -->
+
+    <!-- B1: Gửi đơn -->
+    <rect x="455" y="38" width="240" height="70" rx="8" class="nd m" />
+    <text x="575" y="63" text-anchor="middle" class="tp">1. Gửi đơn hàng</text>
+    <text x="575" y="80" text-anchor="middle" class="ts">Day 0-1</text>
+    <text x="575" y="96" text-anchor="middle" class="tr rm">Merch gửi</text>
+    <line x1="575" y1="108" x2="575" y2="132" class="al" />
+
+    <!-- B2: NM order vải -->
+    <rect x="455" y="132" width="240" height="70" rx="8" class="nd nm" />
+    <text x="575" y="157" text-anchor="middle" class="tp">2. NM order vải</text>
+    <text x="575" y="174" text-anchor="middle" class="ts">Day 1-3</text>
+    <text x="575" y="190" text-anchor="middle" class="tr rn">NM làm</text>
+    <line x1="575" y1="202" x2="575" y2="226" class="al" />
+
+    <!-- B3: Vải đang sản xuất (WAIT) -->
+    <rect x="455" y="226" width="240" height="70" rx="8" fill="var(--color-background-secondary)" stroke="#0F6E56"
+      stroke-width="2" stroke-dasharray="6,4" />
+    <text x="575" y="251" text-anchor="middle" class="tp">3. Vải đang sản xuất</text>
+    <text x="575" y="268" text-anchor="middle" class="ts">15 ngày (Day 3-18)</text>
+    <text x="575" y="284" text-anchor="middle" class="tr rw">Chờ tại supplier</text>
+    <line x1="575" y1="296" x2="575" y2="320" class="al" />
+
+    <!-- B4: Shipping sample đến (TRIGGER) -->
+    <rect x="455" y="320" width="240" height="70" rx="8" class="nd am" />
+    <text x="575" y="345" text-anchor="middle" class="tp">4. Shipping sample đến</text>
+    <text x="575" y="362" text-anchor="middle" class="ts">Day 18</text>
+    <text x="575" y="378" text-anchor="middle" class="tr ra">Trigger 2 luồng</text>
+
+    <!-- FORK from B4 -->
+    <line x1="575" y1="390" x2="575" y2="418" class="dv" />
+    <line x1="260" y1="418" x2="900" y2="418" class="dv" />
+    <line x1="260" y1="418" x2="260" y2="452" class="al" />
+    <line x1="900" y1="418" x2="900" y2="452" class="al" />
+    <text x="575" y="432" text-anchor="middle" class="ts" style="font-size:9px;font-style:italic;">— song song —</text>
+    <text x="260" y="448" text-anchor="middle" class="tr rb"
+      style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;">Bo Dệt</text>
+    <text x="900" y="448" text-anchor="middle" class="tr rw"
+      style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;">Duyệt Vải</text>
+
+    <!-- ─── BO TRACK (cx=260) ─── -->
+
+    <rect x="160" y="452" width="200" height="65" rx="8" class="nd bo" />
+    <text x="260" y="477" text-anchor="middle" class="tp">Đặt bo dệt</text>
+    <text x="260" y="494" text-anchor="middle" class="ts">Day 18</text>
+    <text x="260" y="509" text-anchor="middle" class="tr rn">NM đặt</text>
+    <line x1="260" y1="517" x2="260" y2="541" class="al" />
+
+    <rect x="160" y="541" width="200" height="65" rx="8" class="nd bo" />
+    <text x="260" y="566" text-anchor="middle" class="tp">Nhận bo mẫu</text>
+    <text x="260" y="583" text-anchor="middle" class="ts">+24h</text>
+    <text x="260" y="598" text-anchor="middle" class="tr rn">NM gửi mẫu</text>
+    <line x1="260" y1="606" x2="260" y2="633" class="al" />
+
+    <!-- BO Decision -->
+    <polygon points="260,633 325,668 260,703 195,668" fill="var(--color-background-secondary)" stroke="#7B4EA6"
+      stroke-width="2.5" />
+    <text x="260" y="663" text-anchor="middle" class="tp" style="font-size:12px;">Duyệt bo?</text>
+    <text x="260" y="679" text-anchor="middle" class="tr rm" style="font-size:9px;">Merch</text>
+
+    <text x="232" y="723" text-anchor="middle" class="ts" style="fill:#6CBE45;font-size:10px;">YES</text>
+    <line x1="260" y1="703" x2="260" y2="729" class="al" />
+    <text x="355" y="663" text-anchor="middle" class="ts" style="fill:#E24B4A;font-size:10px;">NO</text>
+    <line x1="325" y1="668" x2="376" y2="668" class="al" />
+
+    <!-- BO_FIX -->
+    <rect x="376" y="638" width="152" height="60" rx="8" class="nd nm" />
+    <text x="452" y="662" text-anchor="middle" class="tp" style="font-size:12px;">Sửa bo (24h)</text>
+    <text x="452" y="679" text-anchor="middle" class="ts" style="font-size:10px;">NM sửa</text>
+    <path d="M 528 668 L 565 668 L 565 611 L 260 611 L 260 633" class="ad" />
+    <text x="558" y="605" text-anchor="end" class="ts" style="font-size:9px;font-style:italic;">Duyệt lại</text>
+
+    <!-- BO_PROD -->
+    <rect x="160" y="729" width="200" height="65" rx="8" class="nd bo" />
+    <text x="260" y="754" text-anchor="middle" class="tp">Sx bo (2 ngày)</text>
+    <text x="260" y="771" text-anchor="middle" class="ts">Day 19-20</text>
+    <text x="260" y="786" text-anchor="middle" class="tr rn">NM làm</text>
+    <line x1="260" y1="794" x2="260" y2="819" class="al" />
+
+    <!-- BO_DONE -->
+    <rect x="160" y="819" width="200" height="46" rx="23" class="nd gn" />
+    <text x="260" y="847" text-anchor="middle" class="tr rg" style="font-size:12px;font-weight:600;">Bo sẵn sàng</text>
+
+    <!-- ─── DUYỆT VẢI TRACK (cx=900) ─── -->
+
+    <!-- V_CHECK: Duyệt vải shipping -->
+    <rect x="800" y="452" width="200" height="65" rx="8" class="nd m" />
+    <text x="900" y="477" text-anchor="middle" class="tp">Duyệt vải shipping</text>
+    <text x="900" y="494" text-anchor="middle" class="ts">Day 18</text>
+    <text x="900" y="509" text-anchor="middle" class="tr rm">Merch kiểm tra</text>
+    <line x1="900" y1="517" x2="900" y2="544" class="al" />
+
+    <!-- V_D Decision CRITICAL -->
+    <polygon points="900,544 968,580 900,616 832,580" fill="var(--color-background-secondary)" stroke="#E24B4A"
+      stroke-width="3" />
+    <text x="900" y="574" text-anchor="middle" class="tp" style="font-size:12px;fill:#E24B4A;">Approved?</text>
+    <text x="900" y="591" text-anchor="middle" class="tr rc" style="font-size:9px;">CRITICAL · Merch</text>
+
+    <text x="868" y="636" text-anchor="middle" class="ts" style="fill:#6CBE45;font-size:10px;">YES</text>
+    <line x1="900" y1="616" x2="900" y2="642" class="al" />
+    <text x="1000" y="575" text-anchor="middle" class="ts" style="fill:#E24B4A;font-size:10px;">NO</text>
+    <line x1="968" y1="580" x2="1022" y2="580" class="al" />
+
+    <!-- V_REJ -->
+    <rect x="1022" y="550" width="108" height="60" rx="8" fill="rgba(226,75,74,0.08)" stroke="#E24B4A"
+      stroke-width="2" />
+    <text x="1076" y="574" text-anchor="middle" style="font-size:11px;font-weight:600;fill:#E24B4A;">Reject</text>
+    <text x="1076" y="591" text-anchor="middle" class="ts" style="font-size:10px;">+15 ngày</text>
+
+    <!-- V_APP -->
+    <rect x="800" y="642" width="200" height="65" rx="8" class="nd gn" />
+    <text x="900" y="667" text-anchor="middle" class="tp">Vải approved</text>
+    <text x="900" y="684" text-anchor="middle" class="ts">Day 18-19</text>
+    <text x="900" y="699" text-anchor="middle" class="tr rg">Merch duyệt</text>
+
+    <!-- ─── MERGE ─── -->
+    <path d="M 260 865 L 260 902 L 462 902" class="al" />
+    <path d="M 900 707 L 900 902 L 688 902" class="al" />
+    <rect x="462" y="880" width="226" height="44" rx="8" fill="rgba(108,190,69,0.1)" stroke="#6CBE45"
+      stroke-width="2" />
+    <text x="575" y="907" text-anchor="middle"
+      style="font-size:12px;font-weight:600;fill:var(--color-text-success);">Production bắt đầu</text>
+    <line x1="575" y1="924" x2="575" y2="948" class="al" />
+
+    <!-- ─── PRODUCTION ─── -->
+    <rect x="455" y="948" width="240" height="65" rx="8" class="nd nm" />
+    <text x="575" y="973" text-anchor="middle" class="tp">5. Xả vải</text>
+    <text x="575" y="990" text-anchor="middle" class="ts">Day 19-20</text>
+    <text x="575" y="1006" text-anchor="middle" class="tr rn">NM làm</text>
+    <line x1="575" y1="1013" x2="575" y2="1036" class="al" />
+
+    <rect x="455" y="1036" width="240" height="65" rx="8" class="nd nm" />
+    <text x="575" y="1061" text-anchor="middle" class="tp">6. Cắt vải</text>
+    <text x="575" y="1078" text-anchor="middle" class="ts">Day 20-21</text>
+    <text x="575" y="1094" text-anchor="middle" class="tr rn">NM làm</text>
+    <line x1="575" y1="1101" x2="575" y2="1124" class="al" />
+
+    <rect x="455" y="1124" width="240" height="65" rx="8" class="nd nm" />
+    <text x="575" y="1149" text-anchor="middle" class="tp">7. Thêu / In</text>
+    <text x="575" y="1166" text-anchor="middle" class="ts">Day 21-23</text>
+    <text x="575" y="1182" text-anchor="middle" class="tr rn">NM làm</text>
+    <line x1="575" y1="1189" x2="575" y2="1212" class="al" />
+
+    <rect x="455" y="1212" width="240" height="78" rx="8" fill="var(--color-background-secondary)" stroke="#E24B4A"
+      stroke-width="3" />
+    <text x="575" y="1238" text-anchor="middle" class="tp">8. NM sewing</text>
+    <text x="575" y="1255" text-anchor="middle" class="ts">Day 22-26 (3-4 ngày)</text>
+    <text x="575" y="1271" text-anchor="middle" class="tr rc">BOTTLENECK</text>
+    <text x="575" y="1284" text-anchor="middle" class="ts" style="font-size:9px;">35% overload risk</text>
+    <line x1="575" y1="1290" x2="575" y2="1313" class="al" />
+
+    <rect x="455" y="1313" width="240" height="65" rx="8" class="nd nm" />
+    <text x="575" y="1338" text-anchor="middle" class="tp">9. Hoàn thành</text>
+    <text x="575" y="1355" text-anchor="middle" class="ts">Day 26-27</text>
+    <text x="575" y="1371" text-anchor="middle" class="tr rn">NM làm</text>
+    <line x1="575" y1="1378" x2="575" y2="1401" class="al" />
+
+    <rect x="455" y="1401" width="240" height="65" rx="8" class="nd m" />
+    <text x="575" y="1426" text-anchor="middle" class="tp">10. Giao khách</text>
+    <text x="575" y="1443" text-anchor="middle" class="ts">Day 27-29</text>
+    <text x="575" y="1459" text-anchor="middle" class="tr rm">Merch giao</text>
+
+    <!-- LEGEND -->
+    <line x1="28" y1="1490" x2="1122" y2="1490" class="dv" stroke-dasharray="3,3" />
+    <rect x="40" y="1498" width="11" height="11" rx="2" fill="var(--color-background-secondary)" stroke="#185FA5"
+      stroke-width="2" />
+    <text x="57" y="1508" font-size="11" style="fill:var(--color-text-secondary);"
+      font-family="var(--font-sans)">Merch</text>
+    <rect x="125" y="1498" width="11" height="11" rx="2" fill="var(--color-background-secondary)" stroke="#5F5E5A"
+      stroke-width="2" />
+    <text x="142" y="1508" font-size="11" style="fill:var(--color-text-secondary);"
+      font-family="var(--font-sans)">NM</text>
+    <rect x="200" y="1498" width="11" height="11" rx="2" fill="var(--color-background-secondary)" stroke="#0F6E56"
+      stroke-width="2" stroke-dasharray="4,3" />
+    <text x="217" y="1508" font-size="11" style="fill:var(--color-text-secondary);"
+      font-family="var(--font-sans)">Chờ</text>
+    <rect x="270" y="1498" width="11" height="11" rx="2" fill="var(--color-background-secondary)" stroke="#7B4EA6"
+      stroke-width="2" />
+    <text x="287" y="1508" font-size="11" style="fill:var(--color-text-secondary);" font-family="var(--font-sans)">Bo
+      dệt</text>
+    <rect x="360" y="1498" width="11" height="11" rx="2" fill="var(--color-background-secondary)" stroke="#F99D23"
+      stroke-width="2" />
+    <text x="377" y="1508" font-size="11" style="fill:var(--color-text-secondary);"
+      font-family="var(--font-sans)">Trigger point</text>
+    <rect x="480" y="1498" width="11" height="11" rx="2" fill="var(--color-background-secondary)" stroke="#E24B4A"
+      stroke-width="2" />
+    <text x="497" y="1508" font-size="11" style="fill:var(--color-text-secondary);"
+      font-family="var(--font-sans)">Critical</text>
+    <rect x="570" y="1498" width="11" height="11" rx="23" fill="rgba(108,190,69,0.1)" stroke="#6CBE45"
+      stroke-width="2" />
+    <text x="587" y="1508" font-size="11" style="fill:var(--color-text-secondary);"
+      font-family="var(--font-sans)">Done</text>
+    <polygon points="660,1498 674,1504 660,1510 646,1504" fill="var(--color-background-secondary)" stroke="#185FA5"
+      stroke-width="1.5" />
+    <text x="680" y="1508" font-size="11" style="fill:var(--color-text-secondary);"
+      font-family="var(--font-sans)">Decision</text>
+  </svg>
+
+  <div class="stitle">Rủi ro chính</div>
+  <div class="rg">
+    <div class="rc crit">
+      <div class="rl">Vải bị reject</div>
+      <div class="ri">Delay +15 ngày &nbsp;|&nbsp; 25-30% xác suất</div>
+      <div class="ri">Color sai, material sai, chất lượng tồi</div>
+      <div class="rf"><strong>Fix:</strong> Sample rõ (Pantone + physical), specify GSM</div>
+    </div>
+    <div class="rc crit">
+      <div class="rl">May overload</div>
+      <div class="ri">Delay +2-5 ngày &nbsp;|&nbsp; 35% xác suất</div>
+      <div class="ri">Qty quá lớn, worker sick, máy lỗi</div>
+      <div class="rf"><strong>Fix:</strong> Báo qty sớm, confirm capacity sau khi approved vải</div>
+    </div>
+    <div class="rc bo">
+      <div class="rl">Bo dệt reject</div>
+      <div class="ri">Delay +1 ngày &nbsp;|&nbsp; Xảy ra nếu design/màu sai</div>
+      <div class="ri">Bo mẫu không match → sửa 24h → duyệt lại</div>
+      <div class="rf"><strong>Fix:</strong> Gửi design file + màu chính xác khi đặt bo</div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,1 @@
+const fs=require('fs'); const txt=fs.readFileSync('sheet.html','utf8'); let idx=txt.indexOf('mã PO'); if(idx!==-1) console.log(txt.substring(idx-200, idx+200)); idx=txt.indexOf('nh s'); if(idx!==-1) console.log(txt.substring(idx-200, idx+200));
