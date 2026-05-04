@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>TQC Weekly Report — Week 5 / April 2026</title>
+<style>
+  :root{
+    --navy-deep:#2A3254; --navy-mid:#384168; --blue-accent:#5877B2; --blue-soft:#9EB0D2;
+    --card:#FDFDFA; --warm:#FAFAF7; --soft:#F2F0EA; --line:#E2DFD7;
+    --text:#2B2B2B; --text2:#737373; --meta:#A5A5A5;
+    --red:#9A2516; --green:#2F5D3A; --amber:#8a6510;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--warm);color:var(--text);padding:32px;font-size:13px;line-height:1.5}
+  .page{max-width:1200px;margin:0 auto}
+
+  /* Header */
+  .header{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:16px;border-bottom:2px solid var(--navy-deep);margin-bottom:24px}
+  h1{font-size:28px;font-weight:800;color:var(--navy-deep);letter-spacing:-0.5px;line-height:1.1;margin-bottom:4px}
+  h1 .week{color:var(--blue-accent);font-weight:600}
+  .header-meta{font-size:11px;color:var(--text2);text-align:right;line-height:1.6}
+  .header-meta b{color:var(--navy-deep);font-weight:700}
+
+  .vn{font-size:0.78em;color:var(--meta);font-weight:400;font-style:italic;margin-left:5px}
+
+  /* Section */
+  .section{margin-bottom:24px}
+  .section-head{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .section-num{font-size:13px;font-weight:800;color:var(--blue-accent);letter-spacing:1px}
+  .section-title{font-size:18px;font-weight:800;color:var(--navy-deep);letter-spacing:-0.2px}
+
+  /* Subsection */
+  .sub{margin-bottom:14px}
+  .sub-head{font-size:11px;font-weight:700;color:var(--navy-deep);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;display:flex;align-items:baseline;gap:8px}
+  .sub-head .num{color:var(--blue-accent);font-weight:800}
+
+  /* KPI grid */
+  .kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:8px}
+  .kpi-row.col4{grid-template-columns:repeat(4,1fr)}
+  .kpi-row.col2{grid-template-columns:repeat(2,1fr)}
+
+  .kpi{background:var(--card);border:1px solid var(--line);padding:12px 14px;border-left:3px solid var(--blue-accent)}
+  .kpi.green{border-left-color:var(--green)}
+  .kpi.red{border-left-color:var(--red)}
+  .kpi.amber{border-left-color:var(--amber)}
+  .kpi .lbl{font-size:9.5px;letter-spacing:0.6px;color:var(--text2);font-weight:600;text-transform:uppercase;margin-bottom:5px;line-height:1.3}
+  .kpi .num{font-size:22px;font-weight:800;color:var(--navy-deep);letter-spacing:-0.5px;line-height:1}
+  .kpi .num small{font-size:13px;color:var(--text2);font-weight:500}
+  .kpi.red .num{color:var(--red)}
+  .kpi.green .num{color:var(--green)}
+  .kpi .sub-text{font-size:10.5px;color:var(--text2);margin-top:5px;font-weight:500}
+  .kpi .sub-text b{color:var(--navy-deep);font-weight:700}
+  .kpi .sub-text .up{color:var(--red);font-weight:700}
+  .kpi .sub-text .down{color:var(--green);font-weight:700}
+
+  /* Card containers */
+  .card{background:var(--card);border:1px solid var(--line);padding:14px 16px}
+
+  /* Development items with progress */
+  .dev-item{display:grid;grid-template-columns:1fr 100px 60px;gap:12px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+  .dev-item:last-child{border-bottom:none}
+  .dev-item .info{font-size:11.5px;line-height:1.4}
+  .dev-item .info b{color:var(--navy-deep);font-weight:700}
+  .dev-item .info .meta{display:block;font-size:10.5px;color:var(--text2);margin-top:2px}
+  .dev-item .bar-wrap{display:flex;align-items:center;gap:6px}
+  .dev-item .bar{flex:1;height:5px;background:var(--soft)}
+  .dev-item .bar .fill{height:100%;background:var(--navy-mid)}
+  .dev-item .bar .fill.warn{background:var(--blue-accent)}
+  .dev-item .bar .fill.done{background:var(--green)}
+  .dev-item .pct{font-size:11.5px;font-weight:700;color:var(--navy-deep);text-align:right}
+  .dev-item .pct.done{color:var(--green)}
+
+  /* Performance */
+  .perf-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .perf-item{background:var(--card);border:1px solid var(--line);padding:14px 16px}
+  .perf-item .lbl{font-size:10px;letter-spacing:0.6px;color:var(--text2);font-weight:600;text-transform:uppercase;margin-bottom:6px}
+  .perf-item .num-row{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+  .perf-item .num{font-size:24px;font-weight:800;color:var(--navy-deep);letter-spacing:-0.5px;line-height:1}
+  .perf-item .num small{font-size:14px;color:var(--text2);font-weight:500}
+  .perf-item .delta{font-size:11px;font-weight:700;padding:2px 8px}
+  .perf-item .delta.up{color:var(--red);background:rgba(154,37,22,0.1)}
+  .perf-item .delta.down{color:var(--green);background:rgba(47,93,58,0.1)}
+  .perf-item .desc{font-size:11px;color:var(--text2);margin-top:4px}
+  .perf-item .desc b{color:var(--navy-deep);font-weight:700}
+
+  /* Next plan */
+  .plan-card{background:var(--navy-deep);color:#fff;padding:16px 20px;display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  .plan-card .item{display:grid;grid-template-columns:24px 1fr;gap:8px;align-items:start}
+  .plan-card .item .num{font-size:14px;font-weight:800;color:var(--blue-soft)}
+  .plan-card .item .text{font-size:11.5px;line-height:1.45;color:#fff}
+  .plan-card .item .text b{color:#fff;font-weight:700}
+
+  /* Section banner header */
+  .section-banner{font-size:9.5px;font-weight:700;color:var(--blue-accent);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:6px}
+
+  /* Footer */
+  .footer{margin-top:32px;padding-top:14px;border-top:1px solid var(--line);font-size:11px;color:var(--text2);display:flex;justify-content:space-between}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="section-banner">Quality Control · Polomanor</div>
+      <h1>TQC WEEKLY REPORT <span class="week">| Week 5 (27 – 30 Apr)</span></h1>
+    </div>
+    <div class="header-meta">
+      <div>Issued by · <b>Dương</b></div>
+      <div>Date · <b>30/04/2026</b></div>
+    </div>
+  </div>
+
+  <!-- ===================== I. KEY OUTPUT ===================== -->
+  <section class="section">
+    <div class="section-head">
+      <span class="section-num">I.</span>
+      <span class="section-title">Key Output <span class="vn">(Kết quả chính)</span></span>
+    </div>
+
+    <!-- 1. Tổng quan kiểm soát chất lượng tháng -->
+    <div class="sub">
+      <div class="sub-head"><span class="num">1.</span> Tổng quan kiểm soát chất lượng tháng <span class="vn">(Monthly QC Overview)</span></div>
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="lbl">KH Kiểm hàng / Tháng 4</div>
+          <div class="num">40<small> / 42</small></div>
+          <div class="sub-text"><b>SKU Color</b> · 2 PO quà tặng không kiểm</div>
+        </div>
+        <div class="kpi green">
+          <div class="lbl">Inspection Coverage Rate</div>
+          <div class="num">95<small>%</small></div>
+          <div class="sub-text">40 / 42 PO đã kiểm</div>
+        </div>
+        <div class="kpi green">
+          <div class="lbl">Tiến độ đồng bộ NPL</div>
+          <div class="num">100<small>%</small></div>
+          <div class="sub-text"><b>40 / 40</b> PO · First-pass Rate</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Tiến độ kiểm hàng -->
+    <div class="sub">
+      <div class="sub-head"><span class="num">2.</span> Tiến độ kiểm hàng <span class="vn">(Inspection Progress)</span></div>
+      <div class="kpi-row col4">
+        <div class="kpi">
+          <div class="lbl">SL PO kiểm Final / Tuần</div>
+          <div class="num">6<small> PO</small></div>
+          <div class="sub-text">Tiến độ tháng <b>100%</b> · Hoàn tất KH</div>
+        </div>
+        <div class="kpi green">
+          <div class="lbl">Final First-Pass Rate</div>
+          <div class="num">83.33<small>%</small></div>
+          <div class="sub-text"><b>5 / 6 PO</b> passed</div>
+        </div>
+        <div class="kpi green">
+          <div class="lbl">FDR <span class="vn">(Final Defect Rate)</span></div>
+          <div class="num">0.76<small>%</small></div>
+          <div class="sub-text"><span class="down">▼ −0.41%</span> vs Tuần 4</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">SL PO Final Tuần sau (est.)</div>
+          <div class="num">12<small> PO</small></div>
+          <div class="sub-text">Dự kiến Tuần 1 / Tháng 5</div>
+        </div>
+      </div>
+
+      <!-- Fail PO note -->
+      <div style="background:#fcf6f5;border-left:3px solid var(--red);padding:10px 14px;margin-top:10px;font-size:11.5px;line-height:1.5">
+        <b style="color:var(--navy-deep)">Fail · 1 PO:</b>
+        PO252 — Sơ mi OXFORD Premium (Be) · GLX · DR 1.14% — lỗi cấu trúc Workmanship: <b style="color:var(--red)">Diễu bị nhiếu vải</b> + Trở trụ + Chỉ thừa. Cần rework và re-inspection.
+      </div>
+    </div>
+
+    <!-- 3. Phát triển nguyên liệu & nhà máy -->
+    <div class="sub">
+      <div class="sub-head"><span class="num">3.</span> Phát triển nguyên liệu &amp; nhà máy <span class="vn">(R&amp;D Development)</span></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+
+        <!-- Textile -->
+        <div class="card">
+          <div style="font-size:10px;font-weight:700;color:var(--blue-accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">
+            ✦ Textile Development <span class="vn" style="text-transform:none;letter-spacing:0;font-weight:400">(Phát triển vải)</span>
+          </div>
+          <div class="dev-item">
+            <div class="info">
+              <b>Double Face Fabric — NCC HH</b>
+              <span class="meta" style="color:var(--red)">Fail · NM không phát triển được CVC 60/40</span>
+            </div>
+            <div class="bar-wrap"><div class="bar"><div class="fill" style="width:100%;background:var(--red)"></div></div></div>
+            <div class="pct" style="color:var(--red)">Fail</div>
+          </div>
+          <div class="dev-item">
+            <div class="info">
+              <b>Double Face Gen 4 — NCC TQ</b>
+              <span class="meta">Đã có mẫu vải · Đang chờ lên mẫu</span>
+            </div>
+            <div class="bar-wrap"><div class="bar"><div class="fill done" style="width:100%"></div></div></div>
+            <div class="pct done">100%</div>
+          </div>
+          <div class="dev-item">
+            <div class="info">
+              <b>Double Face Gen 5 — NCC Trung Quy</b>
+              <span class="meta">Đang điều chỉnh độ to mắt dệt</span>
+            </div>
+            <div class="bar-wrap"><div class="bar"><div class="fill warn" style="width:50%"></div></div></div>
+            <div class="pct">50%</div>
+          </div>
+          <div class="dev-item">
+            <div class="info">
+              <b>Diamond Gen 3 — NCC Trung Quy</b>
+              <span class="meta">Đang điều chỉnh handfeel</span>
+            </div>
+            <div class="bar-wrap"><div class="bar"><div class="fill warn" style="width:50%"></div></div></div>
+            <div class="pct">50%</div>
+          </div>
+        </div>
+
+        <!-- FOB -->
+        <div class="card">
+          <div style="font-size:10px;font-weight:700;color:var(--blue-accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">
+            ✦ FOB Development <span class="vn" style="text-transform:none;letter-spacing:0;font-weight:400">(Phát triển nhà máy)</span>
+          </div>
+          <div class="dev-item">
+            <div class="info">
+              <b>NM Trường Thịnh</b>
+              <span class="meta">Áo Basic DIA · <b style="color:var(--navy-deep)">112,300 đ/áo</b> · Đang test mẫu</span>
+            </div>
+            <div class="bar-wrap"><div class="bar"><div class="fill done" style="width:100%"></div></div></div>
+            <div class="pct done">100%</div>
+          </div>
+          <div class="dev-item">
+            <div class="info">
+              <b>NM Khang Phát</b>
+              <span class="meta">Đã triển khai đơn SX áo T-shirt US Cotton</span>
+            </div>
+            <div class="bar-wrap"><div class="bar"><div class="fill done" style="width:100%"></div></div></div>
+            <div class="pct done">100%</div>
+          </div>
+          <div class="dev-item">
+            <div class="info">
+              <b>NM Vĩnh Hưng</b>
+              <span class="meta">Đã triển khai đơn quần boxer / áo tanktop</span>
+            </div>
+            <div class="bar-wrap"><div class="bar"><div class="fill done" style="width:100%"></div></div></div>
+            <div class="pct done">100%</div>
+          </div>
+          <div class="dev-item">
+            <div class="info">
+              <b>NCC Mitritex</b>
+              <span class="meta">Vải Oxford 60/40 · Chờ test labdip → triển khai đơn</span>
+            </div>
+            <div class="bar-wrap"><div class="bar"><div class="fill done" style="width:100%"></div></div></div>
+            <div class="pct done">100%</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 4. Wash Test -->
+    <div class="sub">
+      <div class="sub-head"><span class="num">4.</span> Báo cáo tổng hợp Wash Test mẫu vải <span class="vn">(Wash Test Summary)</span></div>
+      <div class="kpi-row col2">
+        <div class="kpi red">
+          <div class="lbl">NCC Trung Quy</div>
+          <div class="num" style="color:var(--red)">0<small>%</small></div>
+          <div class="sub-text">Pass <b>0 / 4</b> samples · <span style="color:var(--red);font-weight:700">Fail 4/4</span> — toàn bộ mẫu không đạt yêu cầu</div>
+        </div>
+        <div class="kpi" style="background:var(--soft);border-left-color:var(--meta)">
+          <div class="lbl" style="color:var(--meta)">NCC Hào Hưng</div>
+          <div class="num" style="color:var(--meta)">—</div>
+          <div class="sub-text" style="color:var(--meta);font-style:italic">Không có mẫu test trong tuần</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===================== II. PERFORMANCE TRACKING ===================== -->
+  <section class="section">
+    <div class="section-head">
+      <span class="section-num">II.</span>
+      <span class="section-title">Performance Tracking <span class="vn">(Theo dõi hiệu suất)</span></span>
+    </div>
+
+    <div class="perf-grid">
+      <div class="perf-item">
+        <div class="lbl">Tỉ lệ ĐGTC <span class="vn">(Đánh giá thấp cấp)</span></div>
+        <div class="num-row">
+          <div class="num">1.36<small>%</small></div>
+          <div class="delta down">▼ Ổn định cuối tháng</div>
+        </div>
+        <div class="desc">Tỉ lệ ĐGTC tháng 4 giữ ở mức <b>1.36%</b> — không tăng so với tuần 4</div>
+      </div>
+
+      <div class="perf-item">
+        <div class="lbl">Tỉ lệ lỗi SX hàng hoàn trả <span class="vn">(Production return rate)</span></div>
+        <div class="num-row">
+          <div class="num" style="color:var(--meta)">—</div>
+          <div class="delta" style="color:var(--meta);background:var(--soft);font-style:italic">Chưa kiểm kê</div>
+        </div>
+        <div class="desc" style="font-style:italic">Chưa thực hiện kiểm kê hàng hoàn trả trong tuần · Sẽ cập nhật ở báo cáo sau</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== III. NEXT WEEK PLAN ===================== -->
+  <section class="section">
+    <div class="section-head">
+      <span class="section-num">III.</span>
+      <span class="section-title">Next Week Plan <span class="vn">(Kế hoạch tuần sau)</span></span>
+    </div>
+
+    <div class="plan-card">
+      <div class="item">
+        <div class="num">01</div>
+        <div class="text">
+          <b>Hoàn thành kiểm 9 PO</b><br>
+          <span style="color:var(--blue-soft);font-size:10.5px">Theo kế hoạch Tuần 1 / Tháng 5</span>
+        </div>
+      </div>
+      <div class="item">
+        <div class="num">02</div>
+        <div class="text">
+          <b>Hoàn thành Placement Order App</b><br>
+          <span style="color:var(--blue-soft);font-size:10.5px">Triển khai công cụ đặt đơn nội bộ</span>
+        </div>
+      </div>
+      <div class="item">
+        <div class="num">03</div>
+        <div class="text">
+          <b>Hoàn thành Probation Plan cho Newbie</b><br>
+          <span style="color:var(--blue-soft);font-size:10.5px">Kế hoạch thử việc nhân sự mới</span>
+        </div>
+      </div>
+      <div class="item">
+        <div class="num">04</div>
+        <div class="text">
+          <b>Hoàn thành meeting NM Polo mới</b><br>
+          <span style="color:var(--blue-soft);font-size:10.5px">Onboarding nhà máy Polo bổ sung</span>
+        </div>
+      </div>
+      <div class="item">
+        <div class="num">05</div>
+        <div class="text">
+          <b>Hoàn thành mẫu Proto Q3</b><br>
+          <span style="color:var(--blue-soft);font-size:10.5px">Đã nhận 4/8 · Dự kiến 11/05 đạt 100%</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    <span>POLOMANOR · TQC Department · Week 5 / Apr 2026</span>
+    <span>Issued by <b style="color:var(--navy-deep)">Dương</b> · 30/04/2026</span>
+  </div>
+
+</div>
+</body>
+</html>

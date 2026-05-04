@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>TQC Monthly Dashboard — April 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#2A3254;
+    --navy-mid:#384168;
+    --blue-accent:#5877B2;
+    --blue-soft:#9EB0D2;
+    --bg:#E8E6E0;
+    --card:#FFFFFF;
+    --warm:#FAFAF7;
+    --soft:#F2F0EA;
+    --text:#2B2B2B;
+    --text2:#737373;
+    --meta:#A5A5A5;
+    --line:#E2DFD7;
+    --green:#2F5D3A;
+    --red:#9A2516;
+    --amber:#8a6510;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    padding:24px;
+    -webkit-font-smoothing:antialiased;
+    font-size:13px;
+    line-height:1.5;
+  }
+  .dashboard{max-width:1400px;margin:0 auto}
+
+  /* HEADER */
+  .header{
+    background:var(--navy-deep);color:#fff;padding:18px 28px;
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:24px;
+  }
+  .header h1{font-size:18px;font-weight:800;letter-spacing:-0.3px}
+  .header h1 span{color:var(--blue-soft);font-weight:400;margin-left:6px}
+  .header .meta{font-size:11px;color:var(--blue-soft);display:flex;gap:24px}
+  .header .meta b{color:#fff;font-weight:600;margin-left:4px}
+
+  /* CLUSTER */
+  .cluster{margin-bottom:32px}
+  .cluster-head{display:flex;align-items:center;margin-bottom:16px;gap:8px}
+  .cluster-num{
+    font-weight:800;color:var(--navy-deep);
+    margin-right:4px;
+  }
+  .cluster-titles{flex:1}
+  .cluster-titles .eyebrow{
+    font-size:10px;letter-spacing:2px;color:var(--blue-accent);
+    font-weight:700;text-transform:uppercase;margin-bottom:4px;
+  }
+  .cluster-titles .title{
+    font-size:28px;font-weight:800;color:var(--navy-deep);
+    letter-spacing:-0.8px;line-height:1;margin-bottom:6px;
+  }
+  .cluster-titles .sub{font-size:13px;color:var(--text2);font-style:italic}
+  .cluster-line{flex:1;height:2px;background:var(--navy-deep);max-width:80px}
+  .cluster-meta{font-size:10px;color:var(--text2);font-weight:600;letter-spacing:1px;text-transform:uppercase;text-align:right}
+
+  .cluster-body{background:var(--soft);border:1px solid var(--line);padding:18px}
+
+  .row{display:grid;gap:14px;margin-bottom:14px}
+  .row:last-child{margin-bottom:0}
+
+  /* CARD */
+  .card{background:var(--card);border:1px solid var(--line);padding:16px 18px}
+  .card-tag{font-size:9px;letter-spacing:1.5px;color:var(--blue-accent);font-weight:700;text-transform:uppercase;margin-bottom:6px}
+  .card-title{
+    font-size:13px;font-weight:700;color:var(--navy-deep);
+    margin-bottom:12px;padding-bottom:8px;
+    border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .card-title .muted{font-size:10px;color:var(--text2);font-weight:500}
+
+  /* Vietnamese inline annotation - subtle gray for non-industry readers */
+  .vn{
+    font-size:0.78em;
+    color:var(--meta);
+    font-weight:400;
+    font-style:italic;
+    letter-spacing:0;
+    text-transform:none;
+    margin-left:5px;
+  }
+  .kpi-hero .vn{color:rgba(158,176,210,0.65)}
+  .action-card .vn{color:rgba(158,176,210,0.7)}
+
+  /* ====== KEY METRICS (giữ y v4) ====== */
+  .metrics-layout{display:grid;grid-template-columns:1.6fr 1fr;gap:14px}
+  .kpi-hero{
+    background:var(--navy-deep);color:#fff;padding:32px 36px;
+    display:flex;flex-direction:column;justify-content:center;
+    position:relative;overflow:hidden;
+  }
+  .kpi-hero::before{
+    content:"";position:absolute;top:0;right:0;
+    width:200px;height:200px;
+    background:radial-gradient(circle at top right, rgba(88,119,178,0.4) 0%, transparent 70%);
+  }
+  .kpi-hero .tag{font-size:10px;letter-spacing:2px;color:var(--blue-soft);font-weight:700;text-transform:uppercase;margin-bottom:18px}
+  .kpi-hero .lbl{font-size:13px;color:var(--blue-soft);font-weight:500;margin-bottom:8px}
+  .kpi-hero .num{font-size:80px;font-weight:900;line-height:0.9;letter-spacing:-4px;color:#fff;margin-bottom:14px}
+  .kpi-hero .num small{font-size:32px;font-weight:500;color:var(--blue-soft);letter-spacing:-1px;margin-left:2px}
+  .kpi-hero .delta{
+    display:inline-flex;align-items:center;gap:8px;
+    background:rgba(154,37,22,0.25);border-left:3px solid var(--red);
+    padding:8px 12px;font-size:12px;color:#fff;font-weight:500;align-self:flex-start;
+  }
+  .kpi-hero .delta b{color:#fff;font-weight:700;font-size:13px}
+
+  .kpi-right{display:grid;grid-template-rows:1fr 1fr;gap:14px}
+  .kpi-mid-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .kpi-mid{
+    background:var(--card);border:1px solid var(--line);
+    border-top:4px solid var(--blue-accent);padding:18px 20px;
+    display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .kpi-mid .lbl{font-size:10px;letter-spacing:1px;color:var(--text2);font-weight:600;text-transform:uppercase;margin-bottom:14px}
+  .kpi-mid .num{font-size:38px;font-weight:800;color:var(--navy-deep);letter-spacing:-1.5px;line-height:1;margin-bottom:8px}
+  .kpi-mid .num small{font-size:16px;color:var(--text2);font-weight:500}
+  .kpi-mid .sub{font-size:11px;color:var(--text2);font-weight:500}
+  .kpi-mid .sub b{color:var(--navy-deep);font-weight:700}
+  .kpi-mid .sub.up b{color:var(--red)}
+
+  .kpi-small-pair{display:grid;grid-template-columns:1fr 1.4fr;gap:14px}
+  .kpi-small{padding:14px 18px}
+  .kpi-small .num{font-size:20px}
+
+  /* Combo card with internal divider */
+  .kpi-combo{
+    background:#fcf6f5;
+    border:1px solid #e8d4d0;
+    border-left:3px solid var(--red);
+    padding:14px 18px;
+    display:flex;
+    align-items:stretch;
+    gap:0;
+    position:relative;
+  }
+  .kpi-combo::before{
+    content:"⚠ Brand Risk";
+    position:absolute;
+    top:6px;right:10px;
+    font-size:8.5px;
+    font-weight:700;
+    color:var(--red);
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+  }
+  .kpi-combo-side{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:0 14px;
+  }
+  .kpi-combo-side:first-child{padding-left:0}
+  .kpi-combo-side:last-child{padding-right:0}
+  .kpi-combo .divider{
+    width:1px;
+    background:var(--line);
+    margin:0;
+  }
+  .kpi-combo .lbl{
+    font-size:9px;
+    letter-spacing:0.8px;
+    color:var(--text2);
+    font-weight:600;
+    text-transform:uppercase;
+    margin-bottom:6px;
+    line-height:1.2;
+  }
+  .kpi-combo .num{
+    font-size:22px;
+    font-weight:800;
+    color:var(--navy-deep);
+    letter-spacing:-0.8px;
+    line-height:1;
+    margin-bottom:4px;
+  }
+  .kpi-combo .num small{font-size:12px;color:var(--text2);font-weight:500}
+  .kpi-combo .sub{font-size:10px;color:var(--text2);font-weight:500}
+  .kpi-combo .sub b{color:var(--navy-deep);font-weight:700}
+  .kpi-small{
+    background:var(--card);border:1px solid var(--line);
+    padding:14px 18px;display:flex;align-items:center;gap:14px;
+  }
+  .kpi-small .icon{
+    width:38px;height:38px;background:var(--soft);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;color:var(--navy-deep);
+  }
+  .kpi-small .lbl{font-size:9px;letter-spacing:0.8px;color:var(--text2);font-weight:600;text-transform:uppercase;margin-bottom:3px}
+  .kpi-small .num{font-size:20px;font-weight:800;color:var(--navy-deep);letter-spacing:-0.8px;line-height:1;margin-bottom:3px}
+  .kpi-small .num small{font-size:11px;color:var(--text2);font-weight:500}
+  .kpi-small .sub{font-size:10.5px;color:var(--text2)}
+  .kpi-small .sub b{color:var(--navy-deep);font-weight:700}
+
+  /* ============================================================
+     CLUSTER B — COMPACT TRENDS LAYOUT
+     Trend chart + 4 mini stat blocks in compact grid
+  ============================================================ */
+  .b-grid{
+    display:grid;
+    grid-template-columns:1.6fr 1fr;
+    gap:14px;
+  }
+
+  /* B left — main chart */
+  .b-chart{background:var(--card);border:1px solid var(--line);padding:16px 18px}
+
+  /* B right — 2x2 mini blocks */
+  .b-mini-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-template-rows:1fr 1fr;
+    gap:10px;
+  }
+  .b-mini{
+    background:var(--card);border:1px solid var(--line);
+    padding:12px 14px;display:flex;flex-direction:column;
+  }
+  .b-mini .tag{font-size:8.5px;letter-spacing:1px;color:var(--blue-accent);font-weight:700;text-transform:uppercase;margin-bottom:8px}
+  .b-mini .ttl{font-size:11.5px;font-weight:700;color:var(--navy-deep);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  .b-mini-rows{display:flex;flex-direction:column;gap:5px;flex:1}
+  .b-mini-row{display:grid;grid-template-columns:50px 1fr 40px;gap:8px;align-items:center;font-size:11px}
+  .b-mini-row .lab{color:var(--text2);font-weight:500}
+  .b-mini-row .lab.hl{color:var(--navy-deep);font-weight:700}
+  .b-mini-row .bar{height:5px;background:var(--soft);overflow:hidden}
+  .b-mini-row .fill{height:100%;background:var(--navy-mid)}
+  .b-mini-row .fill.peak{background:var(--blue-accent)}
+  .b-mini-row .fill.risk{background:var(--red)}
+  .b-mini-row .fill.warn{background:var(--amber)}
+  .b-mini-row .fill.good{background:var(--green)}
+  .b-mini-row .v{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;color:var(--navy-deep)}
+
+  .b-mini-donut{display:flex;align-items:center;gap:10px;margin-top:auto}
+  .b-mini-donut .legend{flex:1;font-size:10.5px;line-height:1.5}
+  .b-mini-donut .legend .l-row{display:flex;align-items:center;gap:6px}
+  .b-mini-donut .legend .dot{width:7px;height:7px;flex-shrink:0}
+  .b-mini-donut .legend b{margin-left:auto;color:var(--navy-deep);font-weight:700}
+
+  /* ============================================================
+     R&D PROGRESS BAR — visual scan for development status
+  ============================================================ */
+  .rd-item{
+    padding:8px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .rd-item:last-child{border-bottom:none}
+  .rd-item-head{
+    display:grid;
+    grid-template-columns:1fr 130px;
+    gap:12px;
+    align-items:center;
+    margin-bottom:4px;
+  }
+  .rd-item-name{
+    font-size:11.5px;
+    color:var(--text);
+    font-weight:500;
+    line-height:1.3;
+  }
+  .rd-item-name b{color:var(--navy-deep);font-weight:700}
+  .rd-item-name .ncc{color:var(--text2);font-weight:500}
+
+  .rd-progress{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .rd-bar{
+    flex:1;
+    height:6px;
+    background:var(--soft);
+    border-radius:1px;
+    overflow:hidden;
+  }
+  .rd-bar-fill{
+    height:100%;
+    background:var(--navy-mid);
+    transition:width 0.3s;
+  }
+  .rd-bar-fill.done{background:var(--green)}
+  .rd-bar-fill.fail{background:var(--red);width:100%}
+  .rd-bar-fill.warn{background:var(--blue-accent)}
+
+  .rd-pct{
+    font-size:11px;
+    font-weight:700;
+    color:var(--navy-deep);
+    font-variant-numeric:tabular-nums;
+    min-width:38px;
+    text-align:right;
+  }
+  .rd-pct.done{color:var(--green)}
+  .rd-pct.fail{color:var(--red)}
+
+  .rd-desc{
+    font-size:10.5px;
+    color:var(--text2);
+    line-height:1.4;
+    margin-top:2px;
+  }
+  .rd-desc b{color:var(--navy-deep);font-weight:700}
+
+  .rd-subhead{
+    font-size:9.5px;
+    font-weight:700;
+    color:var(--blue-accent);
+    letter-spacing:1px;
+    text-transform:uppercase;
+    margin-bottom:4px;
+    padding-top:10px;
+  }
+  .rd-subhead.first{padding-top:0}
+  .rd-subhead.divided{border-top:1px dashed var(--line);margin-top:6px}
+
+  /* Boxed sub-group container */
+  .rd-box{
+    background:var(--warm);
+    border:1px solid var(--line);
+    padding:12px 14px;
+    display:flex;
+    flex-direction:column;
+  }
+  .rd-box .rd-subhead{
+    padding-top:0;
+    margin-bottom:8px;
+    padding-bottom:6px;
+    border-bottom:1px solid var(--line);
+  }
+  .rd-box .rd-subhead.first{padding-top:0}
+  .rd-box .rd-item{padding:6px 0}
+  .rd-box .rd-item:last-child{border-bottom:none;padding-bottom:0}
+  .c-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+
+  .c-panel{background:var(--card);border:1px solid var(--line);padding:14px 16px}
+  .c-panel-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    padding-bottom:8px;
+    margin-bottom:6px;
+    border-bottom:1px solid var(--line);
+  }
+  .c-panel-head .t{font-size:12px;font-weight:700;color:var(--navy-deep)}
+  .c-panel-head.worst .t::before{content:"⚠";margin-right:6px;color:var(--red)}
+  .c-panel-head.best .t::before{content:"★";margin-right:6px;color:var(--green)}
+  .c-panel-head .m{font-size:9.5px;color:var(--text2);font-weight:500}
+  .c-list{list-style:none;padding:0}
+  .c-list li{
+    display:grid;
+    grid-template-columns:18px 1fr auto;
+    gap:8px;align-items:center;
+    padding:6px 0;border-bottom:1px dashed var(--line);
+  }
+  .c-list li:last-child{border-bottom:none}
+  .c-list .rk{font-size:10px;font-weight:700;color:var(--blue-accent)}
+  .c-list .name{font-size:11.5px;color:var(--text);font-weight:500;line-height:1.25;min-width:0}
+  .c-list .name b{color:var(--navy-deep);font-weight:700}
+  .c-list .name .meta{display:block;font-size:9.5px;color:var(--text2);margin-top:1px}
+  .c-list .val{
+    font-size:12px;font-weight:700;
+    color:var(--navy-deep);font-variant-numeric:tabular-nums;
+    text-align:right;
+  }
+  .c-list .val.bad{color:var(--red)}
+  .c-list .val.good{color:var(--green)}
+  .c-list li.peak{background:var(--warm);margin:0 -6px;padding:6px 6px;border-radius:2px}
+
+  /* ====== TABLE (shared) ====== */
+  .tbl{width:100%;border-collapse:collapse;font-size:12px}
+  .tbl thead th{
+    font-size:9.5px;letter-spacing:0.6px;color:var(--text2);font-weight:700;
+    text-align:left;padding:7px 8px 7px 0;text-transform:uppercase;
+    border-bottom:1.5px solid var(--navy-deep);
+  }
+  .tbl thead th.num{text-align:right}
+  .tbl tbody td{padding:7px 8px 7px 0;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  .tbl tbody td.num{text-align:right}
+  .tbl tbody tr:last-child td{border-bottom:none}
+  .tbl tbody tr.hl td{background:var(--warm);font-weight:700;color:var(--navy-deep)}
+  .tbl .week{font-weight:700;color:var(--navy-deep)}
+
+  /* ====== CAUSES (compact) ====== */
+  .causes-list{list-style:none;padding:0}
+  .causes-list li{
+    display:grid;grid-template-columns:18px 1fr 36px;
+    gap:10px;align-items:center;padding:8px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .causes-list li:last-child{border-bottom:none}
+  .causes-list .rk{font-size:10px;font-weight:700;color:var(--blue-accent)}
+  .causes-list .name{font-size:12px;font-weight:600;color:var(--navy-deep);margin-bottom:4px}
+  .causes-list .bar{height:5px;background:var(--soft);overflow:hidden}
+  .causes-list .fill{height:100%;background:var(--navy-mid)}
+  .causes-list .v{text-align:right;font-size:14px;font-weight:800;color:var(--navy-deep);font-variant-numeric:tabular-nums}
+
+  /* ====== BULLETS / ACTION ====== */
+  .blist{list-style:none;padding:0}
+  .blist li{padding:7px 0 7px 14px;position:relative;font-size:12.5px;line-height:1.5;border-bottom:1px dashed var(--line)}
+  .blist li:last-child{border-bottom:none}
+  .blist li::before{content:"";position:absolute;left:0;top:14px;width:4px;height:4px;background:var(--blue-accent);border-radius:50%}
+  .blist li b{color:var(--navy-deep);font-weight:600}
+  .blist li .v{font-weight:700;color:var(--navy-deep);font-variant-numeric:tabular-nums}
+  .blist li .v.up{color:var(--red)}
+  .blist li .v.down{color:var(--green)}
+
+  .action-card{background:var(--navy-deep);color:#fff;padding:18px 20px;border:1px solid var(--navy-deep)}
+  .action-card .card-tag{color:var(--blue-soft)}
+  .action-card .card-title{color:#fff;border-bottom-color:rgba(255,255,255,0.15)}
+  .action-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
+  .action-item .num{font-size:22px;font-weight:800;color:var(--blue-soft);line-height:1;margin-bottom:6px}
+  .action-item .t{font-size:11.5px;line-height:1.5;color:#fff}
+  .action-item .t b{color:#fff;font-weight:700}
+
+  .row.c2-5-7{grid-template-columns:5fr 7fr}
+
+  /* ====== FOOTER ====== */
+  .foot{display:flex;justify-content:space-between;align-items:center;padding:16px 4px 0;font-size:10px;color:var(--meta);margin-top:12px}
+  .foot .wm{font-size:13px;font-weight:700;color:var(--navy-deep);letter-spacing:3px}
+
+  @media print{body{background:#fff;padding:0}.card,.cluster{break-inside:avoid}}
+  @media (max-width:1100px){
+    .metrics-layout,.b-grid,.row.c2-5-7{grid-template-columns:1fr}
+    .c-grid{grid-template-columns:1fr;gap:12px}
+    .action-grid{grid-template-columns:repeat(2,1fr)}
+    
+    .cluster-titles .title{font-size:22px}
+  }
+</style>
+</head>
+<body>
+
+<div class="dashboard">
+
+  <!-- HEADER -->
+  <header class="header">
+    <h1>TQC MONTHLY DASHBOARD <span class="vn" style="color:rgba(158,176,210,0.7);font-size:13px">(Báo cáo chất lượng tháng)</span> <span>/ April 2026</span></h1>
+    <div class="meta">
+      <span>Period<b>01 — 30 Apr 2026</b></span>
+      <span>Issued by<b>Dương</b></span>
+      <span>Status<b>Final</b></span>
+    </div>
+  </header>
+
+
+  <!-- ============================================================
+       CLUSTER A · KEY METRICS
+  ============================================================ -->
+  <section class="cluster">
+    <div class="cluster-head">
+      <div class="cluster-titles">
+        <div class="eyebrow">Section 01</div>
+        <div class="title"><span class="cluster-num">A.</span> Key Metrics <span class="vn" style="font-size:14px">(Chỉ số trọng yếu)</span></div>
+        <div class="sub">Các chỉ số quan trọng nhất tháng 4 — phân tầng theo mức độ ảnh hưởng</div>
+      </div>
+      <div class="cluster-line"></div>
+      <div class="cluster-meta">3-second<br>scan zone</div>
+    </div>
+
+    <div class="cluster-body">
+      <div class="metrics-layout">
+
+        <div class="kpi-hero">
+          <div class="tag">Primary KPI <span class="vn">(Chỉ số chính)</span></div>
+          <div class="lbl">Final Defect Rate <span class="vn">(Tỉ lệ lỗi sau kiểm)</span> · Tháng 4</div>
+          <div style="display:flex;align-items:flex-end;gap:16px;margin-bottom:14px">
+            <div class="num" style="margin-bottom:0">1.36<small>%</small></div>
+            <div style="display:flex;flex-direction:column;gap:4px;padding-bottom:10px">
+              <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(154,37,22,0.25);padding:4px 10px;font-size:12px;font-weight:700;color:#fff;border-radius:2px">
+                ▲ +0.30pp
+              </div>
+              <span style="font-size:10px;color:var(--blue-soft);font-style:italic">vs Tháng 3 (1.06%)</span>
+            </div>
+          </div>
+          <div class="delta">
+            <span style="font-size:14px">▲</span>
+            Tuần 4 peak <b>1.71%</b> &nbsp;·&nbsp; Threshold <span class="vn">(Ngưỡng cảnh báo)</span> 1.5%
+          </div>
+        </div>
+
+        <div class="kpi-right">
+          <div class="kpi-mid-pair">
+            <div class="kpi-mid">
+              <div>
+                <div class="lbl">Final Pass Rate <span class="vn">(Tỉ lệ đạt)</span></div>
+                <div class="num">85.3<small>%</small></div>
+              </div>
+              <div class="sub"><b>29 / 34</b> PO passed <span class="vn">(Đạt yêu cầu)</span></div>
+            </div>
+            <div class="kpi-mid">
+              <div>
+                <div class="lbl">ĐGTC Rate <span class="vn">(Đánh giá thấp cấp)</span></div>
+                <div class="num">1.36<small>%</small></div>
+              </div>
+              <div class="sub up"><b>+0.73%</b> vs Tháng 3</div>
+            </div>
+          </div>
+
+          <div class="kpi-small-pair">
+            <div class="kpi-small">
+              <div class="icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 11l2 2 4-4"/></svg>
+              </div>
+              <div>
+                <div class="lbl">PO Inspected <span class="vn">(Đã kiểm)</span></div>
+                <div class="num">34<small> / 36</small></div>
+                <div class="sub"><b>2 PO</b> chưa kiểm</div>
+              </div>
+            </div>
+
+            <div class="kpi-combo">
+              <div class="kpi-combo-side">
+                <div class="lbl">Lỗi SX / Outbound <span class="vn">(Net Out)</span></div>
+                <div class="num">0.04<small>%</small></div>
+                <div class="sub"><b>9 / 24,304</b> pcs</div>
+              </div>
+              <div class="divider"></div>
+              <div class="kpi-combo-side">
+                <div class="lbl">Lỗi SX / Tổng hoàn <span class="vn">(Returns)</span></div>
+                <div class="num" style="color:var(--red)">10.0<small>%</small></div>
+                <div class="sub"><b>9 / 90</b> pcs hoàn</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       CLUSTER B · COMPACT TRENDS
+       Chart lớn bên trái + 2x2 mini stat blocks bên phải
+  ============================================================ -->
+  <section class="cluster">
+    <div class="cluster-head">
+      <div class="cluster-titles">
+        <div class="eyebrow">Section 02</div>
+        <div class="title"><span class="cluster-num">B.</span> Trends <span class="vn" style="font-size:14px">(Xu hướng theo tuần)</span></div>
+        <div class="sub">Xu hướng tháng 4 — gom gọn defect rate, inspection, ĐGTC, supplier, return</div>
+      </div>
+      <div class="cluster-line"></div>
+      <div class="cluster-meta">Weekly<br>tracking</div>
+    </div>
+
+    <div class="cluster-body">
+      <div class="b-grid">
+
+        <!-- Main chart -->
+        <div class="b-chart">
+          <div class="card-tag">Primary Trend <span class="vn">(Xu hướng chính)</span></div>
+          <div class="card-title">Final Defect Rate <span class="vn">(Tỉ lệ lỗi)</span> · 5 weeks
+            <span class="muted">Threshold 1.5% · Tuần 4 peak</span>
+          </div>
+          <svg viewBox="0 0 700 200" width="100%" height="200" style="display:block">
+            <text x="44" y="22" text-anchor="end" font-size="10" fill="#737373" font-family="Inter">2.0%</text>
+            <text x="44" y="82" text-anchor="end" font-size="10" fill="#737373" font-family="Inter">1.0%</text>
+            <text x="44" y="142" text-anchor="end" font-size="10" fill="#737373" font-family="Inter">0%</text>
+
+            <line x1="54" y1="18" x2="690" y2="18" stroke="#E2DFD7" stroke-dasharray="2,3"/>
+            <line x1="54" y1="78" x2="690" y2="78" stroke="#E2DFD7" stroke-dasharray="2,3"/>
+            <line x1="54" y1="138" x2="690" y2="138" stroke="#2A3254" stroke-width="0.8"/>
+
+            <line x1="54" y1="48" x2="690" y2="48" stroke="#9A2516" stroke-dasharray="3,3" opacity="0.5"/>
+            <text x="688" y="44" text-anchor="end" font-size="9" font-style="italic" fill="#9A2516" font-family="Inter">1.5%</text>
+
+            <rect x="92"  y="39.6"  width="100" height="98.4" fill="#384168"/>
+            <rect x="216" y="65.4"  width="100" height="72.6" fill="#384168"/>
+            <rect x="340" y="74.4"  width="100" height="63.6" fill="#384168"/>
+            <rect x="464" y="35.4"  width="100" height="102.6" fill="#9A2516"/>
+            <rect x="588" y="92.4"  width="100" height="45.6" fill="#384168"/>
+
+            <text x="142" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="#2A3254" font-family="Inter">1.64%</text>
+            <text x="266" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="#2A3254" font-family="Inter">1.21%</text>
+            <text x="390" y="67" text-anchor="middle" font-size="11" font-weight="700" fill="#2A3254" font-family="Inter">1.06%</text>
+            <text x="514" y="28" text-anchor="middle" font-size="13" font-weight="800" fill="#9A2516" font-family="Inter">1.71%</text>
+            <text x="638" y="85" text-anchor="middle" font-size="11" font-weight="700" fill="#2A3254" font-family="Inter">0.76%</text>
+
+            <text x="142" y="160" text-anchor="middle" font-size="11" fill="#737373" font-family="Inter">Tuần 1</text>
+            <text x="266" y="160" text-anchor="middle" font-size="11" fill="#737373" font-family="Inter">Tuần 2</text>
+            <text x="390" y="160" text-anchor="middle" font-size="11" fill="#737373" font-family="Inter">Tuần 3</text>
+            <text x="514" y="160" text-anchor="middle" font-size="11" font-weight="700" fill="#9A2516" font-family="Inter">Tuần 4</text>
+            <text x="638" y="160" text-anchor="middle" font-size="11" fill="#737373" font-family="Inter">Tuần 5</text>
+
+            <text x="142" y="178" text-anchor="middle" font-size="9.5" fill="#A5A5A5" font-family="Inter">8/8 pass</text>
+            <text x="266" y="178" text-anchor="middle" font-size="9.5" fill="#A5A5A5" font-family="Inter">4/4 pass</text>
+            <text x="390" y="178" text-anchor="middle" font-size="9.5" fill="#A5A5A5" font-family="Inter">6/7 pass</text>
+            <text x="514" y="178" text-anchor="middle" font-size="9.5" font-weight="600" fill="#9A2516" font-family="Inter">6/9 pass</text>
+            <text x="638" y="178" text-anchor="middle" font-size="9.5" fill="#A5A5A5" font-family="Inter">5/6 pass</text>
+          </svg>
+
+          <!-- Diagnostic insights below chart -->
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)">
+            <div style="font-size:9px;letter-spacing:1.2px;color:var(--blue-accent);font-weight:700;text-transform:uppercase;margin-bottom:8px">
+              Nhận định <span class="vn" style="font-style:italic;color:var(--meta);letter-spacing:0;text-transform:none">(Diagnostic)</span>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:8px">
+
+              <!-- Insight 01 -->
+              <div style="display:grid;grid-template-columns:20px 1fr;gap:8px;padding:8px 10px;background:#fcf6f5;border-left:3px solid var(--red);font-size:11px;line-height:1.5">
+                <div style="font-weight:800;color:var(--red);letter-spacing:0.5px">01</div>
+                <div>
+                  <b style="color:var(--navy-deep)">Phân luồng rủi ro — Lỗi cấu trúc vs. ngoại quan.</b>
+                  <b>4/5 PO</b> Fail do lỗi cấu trúc (hở trụ, lệch dung sai thêu, bung đường may). Lỗi ngoại quan (vải/dính bẩn) chiếm <b>20/32 ca</b>, dù qua AQL nhưng ảnh hưởng trải nghiệm khách hàng cuối.
+                  <span style="display:block;margin-top:4px;color:var(--text2)">
+                    <b style="color:var(--red)">Hành động:</b>
+                    <b style="color:var(--navy-deep)">Cấu trúc</b> — QC Inline kiểm 100% tại thêu/may lai/trụ áo trên chuyền ·
+                    <b style="color:var(--navy-deep)">Ngoại quan</b> — siết tiêu chuẩn + bắt buộc vệ sinh công nghiệp trước ủi/đóng gói.
+                  </span>
+                </div>
+              </div>
+
+              <!-- Insight 02 -->
+              <div style="display:grid;grid-template-columns:20px 1fr;gap:8px;padding:8px 10px;background:#fcf6f5;border-left:3px solid var(--red);font-size:11px;line-height:1.5">
+                <div style="font-weight:800;color:var(--red);letter-spacing:0.5px">02</div>
+                <div>
+                  <b style="color:var(--navy-deep)">Rủi ro chất lượng khi rút tiến độ — TLN.</b>
+                  TLN ổn định ở nhịp tiêu chuẩn (T1: DR <b>1.37%</b>) nhưng suy giảm khi tiến độ rút ngắn (T4: DR <b style="color:var(--red)">4.71%</b>). Thiếu lead-time → nhà máy ưu tiên công suất thay vì chất lượng.
+                  <span style="display:block;margin-top:4px;color:var(--text2)">
+                    <b style="color:var(--red)">Hành động:</b>
+                    <b style="color:var(--navy-deep)">QC</b> — thiết lập cảnh báo sớm, phối hợp Quản đốc điều chỉnh quy trình ngay trên chuyền, không chờ Final Inspection.
+                  </span>
+                </div>
+              </div>
+
+              <!-- Insight 03 -->
+              <div style="display:grid;grid-template-columns:20px 1fr;gap:8px;padding:8px 10px;background:var(--warm);border-left:3px solid var(--amber);font-size:11px;line-height:1.5">
+                <div style="font-weight:800;color:var(--amber);letter-spacing:0.5px">03</div>
+                <div>
+                  <b style="color:var(--navy-deep)">Xu hướng cải thiện ở Tuần 5.</b>
+                  DR giảm xuống <b>0.76%</b> không do năng lực gia công cải thiện, mà do cơ cấu mã hàng độ phức tạp thấp (<b>2 styles</b> cơ bản) và vắng các NCC rủi ro cao.
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- 2x2 mini stat grid · CHART TYPE matched to data nature -->
+        <div class="b-mini-grid">
+
+          <!-- Inspection — LINE CHART (timeline trend) -->
+          <div class="b-mini">
+            <div class="tag">Inspection · Trend <span class="vn">(Kiểm hàng)</span></div>
+            <div class="ttl">Pass Rate / Week <span class="vn">(Tỉ lệ đạt theo tuần)</span>
+              <span style="float:right;font-size:10px;color:var(--red);font-weight:700">▼ T4 dip</span>
+            </div>
+            <svg viewBox="0 0 280 110" width="100%" height="110" style="display:block;margin-top:auto">
+              <!-- y axis labels -->
+              <text x="22" y="14" text-anchor="end" font-size="8.5" fill="#737373" font-family="Inter">100</text>
+              <text x="22" y="52" text-anchor="end" font-size="8.5" fill="#737373" font-family="Inter">80</text>
+              <text x="22" y="90" text-anchor="end" font-size="8.5" fill="#737373" font-family="Inter">60</text>
+              <!-- gridlines -->
+              <line x1="26" y1="10" x2="276" y2="10" stroke="#E2DFD7" stroke-dasharray="2,3"/>
+              <line x1="26" y1="48" x2="276" y2="48" stroke="#E2DFD7" stroke-dasharray="2,3"/>
+              <line x1="26" y1="86" x2="276" y2="86" stroke="#2A3254" stroke-width="0.5"/>
+              <!-- Line: T1=100, T2=100, T3=85.7, T4=66.7, T5=83.3 (range 60-100, plot height 76) -->
+              <!-- y = 86 - (val-60)*76/40 -->
+              <!-- T1=10, T2=10, T3=37, T4=73, T5=42 -->
+              <polyline points="56,10 110,10 164,37 218,73 272,42"
+                fill="none" stroke="#384168" stroke-width="2"/>
+              <!-- Area fill -->
+              <polyline points="56,10 110,10 164,37 218,73 272,42 272,86 56,86"
+                fill="#384168" opacity="0.08"/>
+              <!-- Dots -->
+              <circle cx="56" cy="10" r="3" fill="#384168"/>
+              <circle cx="110" cy="10" r="3" fill="#384168"/>
+              <circle cx="164" cy="37" r="3" fill="#384168"/>
+              <circle cx="218" cy="73" r="4.5" fill="#9A2516" stroke="#fff" stroke-width="1.5"/>
+              <circle cx="272" cy="42" r="3" fill="#384168"/>
+              <!-- Dip annotation -->
+              <text x="218" y="65" text-anchor="middle" font-size="9" font-weight="700" fill="#9A2516" font-family="Inter">66.7%</text>
+              <!-- x labels -->
+              <text x="56" y="103" text-anchor="middle" font-size="9" fill="#737373" font-family="Inter">T1</text>
+              <text x="110" y="103" text-anchor="middle" font-size="9" fill="#737373" font-family="Inter">T2</text>
+              <text x="164" y="103" text-anchor="middle" font-size="9" fill="#737373" font-family="Inter">T3</text>
+              <text x="218" y="103" text-anchor="middle" font-size="9" font-weight="700" fill="#9A2516" font-family="Inter">T4</text>
+              <text x="272" y="103" text-anchor="middle" font-size="9" fill="#737373" font-family="Inter">T5</text>
+            </svg>
+          </div>
+
+          <!-- ĐGTC — LINE CHART (timeline trend) -->
+          <div class="b-mini">
+            <div class="tag">ĐGTC · Trend <span class="vn">(Đánh giá thấp)</span></div>
+            <div class="ttl">% ĐGTC / Week <span class="vn">(Tỉ lệ ĐG thấp theo tuần)</span>
+              <span style="float:right;font-size:10px;color:var(--green);font-weight:700">▼ Recovering</span>
+            </div>
+            <svg viewBox="0 0 280 110" width="100%" height="110" style="display:block;margin-top:auto">
+              <text x="22" y="14" text-anchor="end" font-size="8.5" fill="#737373" font-family="Inter">2.5</text>
+              <text x="22" y="52" text-anchor="end" font-size="8.5" fill="#737373" font-family="Inter">1.5</text>
+              <text x="22" y="90" text-anchor="end" font-size="8.5" fill="#737373" font-family="Inter">0.5</text>
+              <line x1="26" y1="10" x2="276" y2="10" stroke="#E2DFD7" stroke-dasharray="2,3"/>
+              <line x1="26" y1="48" x2="276" y2="48" stroke="#E2DFD7" stroke-dasharray="2,3"/>
+              <line x1="26" y1="86" x2="276" y2="86" stroke="#2A3254" stroke-width="0.5"/>
+              <!-- T1=0.73, T2=1.98, T3=2.20, T4=1.36 (range 0.5-2.5, height 76) -->
+              <!-- y = 86 - (val-0.5)*76/2 -->
+              <!-- T1=77, T2=30, T3=21, T4=53 -->
+              <polyline points="68,77 140,30 212,21 284,53"
+                fill="none" stroke="#384168" stroke-width="2" transform="translate(-6,0)"/>
+              <polyline points="62,77 134,30 206,21 278,53 278,86 62,86"
+                fill="#384168" opacity="0.08"/>
+              <circle cx="62" cy="77" r="3" fill="#384168"/>
+              <circle cx="134" cy="30" r="3" fill="#384168"/>
+              <circle cx="206" cy="21" r="4.5" fill="#9A2516" stroke="#fff" stroke-width="1.5"/>
+              <circle cx="278" cy="53" r="3" fill="#5877B2"/>
+              <!-- Peak annotation -->
+              <text x="206" y="14" text-anchor="middle" font-size="9" font-weight="700" fill="#9A2516" font-family="Inter">2.20%</text>
+              <text x="62" y="103" text-anchor="middle" font-size="9" fill="#737373" font-family="Inter">T1</text>
+              <text x="134" y="103" text-anchor="middle" font-size="9" fill="#737373" font-family="Inter">T2</text>
+              <text x="206" y="103" text-anchor="middle" font-size="9" font-weight="700" fill="#9A2516" font-family="Inter">T3</text>
+              <text x="278" y="103" text-anchor="middle" font-size="9" fill="#737373" font-family="Inter">T4</text>
+            </svg>
+          </div>
+
+          <!-- Supplier — HORIZONTAL BAR with VOLUME (categorical comparison/ranking) -->
+          <div class="b-mini">
+            <div class="tag">Supplier · Ranking <span class="vn">(Xếp hạng NCC)</span></div>
+            <div class="ttl">Avg DR / NCC <span class="vn">(Volume)</span></div>
+            <div class="b-mini-rows">
+              <div class="b-mini-row" style="grid-template-columns:38px 1fr 60px">
+                <span class="lab hl">TLN<br><span style="font-size:8.5px;color:var(--text2);font-weight:400;font-style:italic">7,702</span></span>
+                <div class="bar"><div class="fill risk" style="width:100%"></div></div>
+                <span class="v" style="color:var(--red)">1.83%</span>
+              </div>
+              <div class="b-mini-row" style="grid-template-columns:38px 1fr 60px">
+                <span class="lab">AT<br><span style="font-size:8.5px;color:var(--text2);font-weight:400;font-style:italic">3,900</span></span>
+                <div class="bar"><div class="fill warn" style="width:62%"></div></div>
+                <span class="v">1.14%</span>
+              </div>
+              <div class="b-mini-row" style="grid-template-columns:38px 1fr 60px">
+                <span class="lab">GLX<br><span style="font-size:8.5px;color:var(--text2);font-weight:400;font-style:italic">5,200</span></span>
+                <div class="bar"><div class="fill warn" style="width:58%"></div></div>
+                <span class="v">1.06%</span>
+              </div>
+              <div class="b-mini-row" style="grid-template-columns:38px 1fr 60px">
+                <span class="lab">LC<br><span style="font-size:8.5px;color:var(--text2);font-weight:400;font-style:italic">7,167</span></span>
+                <div class="bar"><div class="fill good" style="width:48%"></div></div>
+                <span class="v" style="color:var(--green)">0.88%</span>
+              </div>
+              <div class="b-mini-row" style="grid-template-columns:38px 1fr 60px">
+                <span class="lab" style="color:var(--meta)">AN*<br><span style="font-size:8.5px;color:var(--text2);font-weight:400;font-style:italic">500</span></span>
+                <div class="bar"><div class="fill" style="width:0%"></div></div>
+                <span class="v" style="color:var(--meta);font-size:9.5px">n=1</span>
+              </div>
+            </div>
+            <div style="font-size:8.5px;color:var(--text2);font-style:italic;margin-top:6px;padding-top:6px;border-top:1px solid var(--line)">
+              ⚠ TLN volume cao + DR cao = <b style="color:var(--red);font-style:normal">Impact lớn nhất</b>
+            </div>
+          </div>
+
+          <!-- Return — STACKED HORIZONTAL BAR (part-to-whole, more compact than donut) -->
+          <div class="b-mini">
+            <div class="tag">Return · Composition <span class="vn">(Cơ cấu hoàn trả)</span></div>
+            <div class="ttl">% trên Net Outbound · 24,304 pcs
+              <span style="float:right;font-size:10px;color:var(--green);font-weight:700">0.37% return</span>
+            </div>
+            <div style="margin-top:auto">
+              <!-- Stacked bar visualizing return rate vs net outbound (×100 scale) -->
+              <div style="display:flex;height:14px;border:1px solid var(--line);overflow:hidden;margin-bottom:8px;background:var(--soft)">
+                <div style="background:var(--navy-mid);width:28.4%" title="In-Use 0.284%"></div>
+                <div style="background:var(--blue-soft);width:4.9%" title="Other 0.049%"></div>
+                <div style="background:var(--red);width:3.7%" title="Production 0.037%"></div>
+              </div>
+              <div style="font-size:9px;color:var(--text2);margin-bottom:10px;text-align:center;font-style:italic">Bar scale ×100 · Net = Gross 31,444 − Hoàn match T4 (7,140)</div>
+              <!-- Legend with rate over outbound -->
+              <div style="display:flex;flex-direction:column;gap:6px;font-size:10.5px">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="width:8px;height:8px;background:var(--navy-mid);display:inline-block"></span>
+                  <span style="color:var(--navy-deep);font-weight:600;flex:1">In-Use <span class="vn">(Sau giặt)</span></span>
+                  <span style="color:var(--text2);font-size:9.5px">69 pcs</span>
+                  <span style="font-weight:700;color:var(--navy-deep);font-variant-numeric:tabular-nums;min-width:46px;text-align:right">0.284%</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="width:8px;height:8px;background:var(--blue-soft);display:inline-block"></span>
+                  <span style="color:var(--navy-deep);font-weight:600;flex:1">Other <span class="vn">(Khác)</span></span>
+                  <span style="color:var(--text2);font-size:9.5px">12 pcs</span>
+                  <span style="font-weight:700;color:var(--navy-deep);font-variant-numeric:tabular-nums;min-width:46px;text-align:right">0.049%</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="width:8px;height:8px;background:var(--red);display:inline-block"></span>
+                  <span style="color:var(--red);font-weight:700;flex:1">Lỗi SX <span class="vn" style="color:rgba(154,37,22,0.55)">(Production)</span></span>
+                  <span style="color:var(--text2);font-size:9.5px">9 pcs</span>
+                  <span style="font-weight:700;color:var(--red);font-variant-numeric:tabular-nums;min-width:46px;text-align:right">0.037%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       CLUSTER C · COMPACT TOP LISTS
+       Worst + Best dùng chung 1 card · Causes nhỏ bên cạnh
+  ============================================================ -->
+  <section class="cluster">
+    <div class="cluster-head">
+      <div class="cluster-titles">
+        <div class="eyebrow">Section 03</div>
+        <div class="title"><span class="cluster-num">C.</span> Top Lists <span class="vn" style="font-size:14px">(Bảng xếp hạng)</span></div>
+        <div class="sub">Bảng xếp hạng — PO &amp; nguyên nhân lỗi tháng 4</div>
+      </div>
+      <div class="cluster-line"></div>
+      <div class="cluster-meta">Ranking</div>
+    </div>
+
+    <div class="cluster-body">
+      <!-- Diagnostic insight banner -->
+      <div style="background:linear-gradient(90deg, rgba(154,37,22,0.08) 0%, rgba(154,37,22,0.02) 100%);border-left:3px solid var(--red);padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:14px">
+        <div style="font-size:18px">🔍</div>
+        <div style="flex:1;font-size:11.5px;color:var(--text);line-height:1.45">
+          <b style="color:var(--navy-deep)">Diagnostic insight:</b>
+          PO88 — Basic Symbol cùng xưởng TLN nhưng Navy <b style="color:var(--red)">fail 7.71%</b>, Đen <b style="color:var(--green)">pass 0.00%</b>
+          <span class="vn" style="display:block;margin-top:2px">→ Vấn đề KHÔNG phải tay nghề/rập, mà ở chất lượng nhuộm vải Navy hoặc cẩu thả khi xử lý màu tối → liên kết với "Dính dầu/dơ" 45 mentions</span>
+        </div>
+      </div>
+
+      <div class="c-grid">
+
+        <!-- Worst -->
+        <div class="c-panel">
+          <div class="c-panel-head worst">
+            <span class="t">Top 5 — Defect Rate cao nhất</span>
+            <span class="m">Risk PO</span>
+          </div>
+          <ul class="c-list">
+            <li class="peak">
+              <span class="rk">1</span>
+              <div class="name"><b>PO88</b> — Basic Symbol<span class="meta">Navy · TLN · Fail</span></div>
+              <span class="val bad">7.71%</span>
+            </li>
+            <li>
+              <span class="rk">2</span>
+              <div class="name"><b>PO215</b> — Classic Diamond<span class="meta">Navy · AN · Pass</span></div>
+              <span class="val bad">4.00%</span>
+            </li>
+            <li>
+              <span class="rk">3</span>
+              <div class="name"><b>PO258</b> — Sơ mi Poplin<span class="meta">Trắng 02 · GLX · Pass</span></div>
+              <span class="val bad">3.43%</span>
+            </li>
+            <li>
+              <span class="rk">4</span>
+              <div class="name"><b>PO226</b> — Wick<span class="meta">Be Đậm · TLN · Fail</span></div>
+              <span class="val">2.86%</span>
+            </li>
+            <li>
+              <span class="rk">5</span>
+              <div class="name"><b>PO86</b> — Quần Tây Lưng Chun<span class="meta">Be · LC · Fail</span></div>
+              <span class="val">2.86%</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Best -->
+        <div class="c-panel">
+          <div class="c-panel-head best">
+            <span class="t">Top 5 — Best Performers</span>
+            <span class="m">Lowest DR</span>
+          </div>
+          <ul class="c-list">
+            <li>
+              <span class="rk">1</span>
+              <div class="name"><b>PO88</b> — Basic Symbol<span class="meta">Đen · TLN · Pass</span></div>
+              <span class="val good">0.00%</span>
+            </li>
+            <li>
+              <span class="rk">2</span>
+              <div class="name"><b>PO126</b> — Kaki SD<span class="meta">Nâu · LC · Pass</span></div>
+              <span class="val good">0.00%</span>
+            </li>
+            <li>
+              <span class="rk">3</span>
+              <div class="name"><b>PO201</b> — Jay<span class="meta">Kem Nhạt · TLN · Pass</span></div>
+              <span class="val">0.29%</span>
+            </li>
+            <li>
+              <span class="rk">4</span>
+              <div class="name"><b>PO119</b> — Classic<span class="meta">Đen · AT · Pass</span></div>
+              <span class="val">0.29%</span>
+            </li>
+            <li>
+              <span class="rk">5</span>
+              <div class="name"><b>PO99</b> — Short Kaki<span class="meta">Be Đậm · LC · Pass</span></div>
+              <span class="val">0.29%</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Causes -->
+        <div class="c-panel">
+          <div class="c-panel-head">
+            <span class="t">Top Defect Causes <span class="vn" style="font-size:10px;color:var(--meta);font-style:italic">(Nguyên nhân lỗi)</span></span>
+            <span class="m">32 mentions</span>
+          </div>
+          <ul class="causes-list">
+            <li>
+              <span class="rk">01</span>
+              <div>
+                <div class="name">Lỗi vải / sợi / rách</div>
+                <div class="bar"><div class="fill" style="width:100%"></div></div>
+              </div>
+              <span class="v">14</span>
+            </li>
+            <li>
+              <span class="rk">02</span>
+              <div>
+                <div class="name">Dính dầu / dơ / bẩn</div>
+                <div class="bar"><div class="fill" style="width:43%"></div></div>
+              </div>
+              <span class="v">6</span>
+            </li>
+            <li>
+              <span class="rk">03</span>
+              <div>
+                <div class="name">Đường may / chỉ</div>
+                <div class="bar"><div class="fill" style="width:36%"></div></div>
+              </div>
+              <span class="v">5</span>
+            </li>
+            <li>
+              <span class="rk">04</span>
+              <div>
+                <div class="name">Hở trụ / cấu trúc</div>
+                <div class="bar"><div class="fill" style="width:14%"></div></div>
+              </div>
+              <span class="v">2</span>
+            </li>
+            <li>
+              <span class="rk">05</span>
+              <div>
+                <div class="name">Thêu / logo</div>
+                <div class="bar"><div class="fill" style="width:14%"></div></div>
+              </div>
+              <span class="v">2</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       CLUSTER D · PIPELINE & ACTION
+  ============================================================ -->
+  <section class="cluster">
+    <div class="cluster-head">
+      <div class="cluster-titles">
+        <div class="eyebrow">Section 04</div>
+        <div class="title"><span class="cluster-num">D.</span> Pipeline &amp; Action <span class="vn" style="font-size:14px">(Tiến độ &amp; hành động)</span></div>
+        <div class="sub">R&amp;D + kế hoạch hành động Tháng 5</div>
+      </div>
+      <div class="cluster-line"></div>
+      <div class="cluster-meta">Forward<br>look</div>
+    </div>
+
+    <div class="cluster-body">
+      <div class="row" style="grid-template-columns:1fr;gap:14px">
+        <div class="card">
+          <div class="card-tag">R&amp;D <span class="vn">(Nghiên cứu &amp; phát triển)</span></div>
+          <div class="card-title">Development <span class="vn">(Phát triển)</span>
+            <span class="muted">11 items · 4 nhóm</span>
+          </div>
+
+          <!-- 4-column grid: each subgroup is a separate box -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-top:6px">
+
+            <!-- Box 1: NPL -->
+            <div class="rd-box">
+
+          <!-- Sub-group: NPL -->
+          <div class="rd-subhead first">
+            ✦ Phát triển NPL <span class="vn" style="font-style:italic;color:var(--meta);letter-spacing:0;text-transform:none;font-weight:400">(Vải &amp; NPL)</span>
+          </div>
+
+          <div class="rd-item">
+            <div class="rd-item-head">
+              <div class="rd-item-name"><b>Double Face Gen 3</b> — <span class="ncc">NCC HH</span></div>
+              <div class="rd-progress">
+                <div class="rd-bar"><div class="rd-bar-fill fail"></div></div>
+                <div class="rd-pct fail">Fail</div>
+              </div>
+            </div>
+            <div class="rd-desc">Nhà máy không phát triển được dòng chất liệu CVC 60/40</div>
+          </div>
+
+          <div class="rd-item">
+            <div class="rd-item-head">
+              <div class="rd-item-name"><b>Double Face Gen 4</b> — <span class="ncc">NCC TQ</span></div>
+              <div class="rd-progress">
+                <div class="rd-bar"><div class="rd-bar-fill done" style="width:100%"></div></div>
+                <div class="rd-pct done">100%</div>
+              </div>
+            </div>
+            <div class="rd-desc">Đã có mẫu vải — đang chờ lên mẫu</div>
+          </div>
+
+          <div class="rd-item">
+            <div class="rd-item-head">
+              <div class="rd-item-name"><b>Double Face Gen 5</b> — <span class="ncc">NCC Trung Quy</span></div>
+              <div class="rd-progress">
+                <div class="rd-bar"><div class="rd-bar-fill warn" style="width:50%"></div></div>
+                <div class="rd-pct">50%</div>
+              </div>
+            </div>
+            <div class="rd-desc">Đang điều chỉnh độ to mắt dệt</div>
+          </div>
+
+          <div class="rd-item">
+            <div class="rd-item-head">
+              <div class="rd-item-name"><b>Diamond Gen 3</b> — <span class="ncc">NCC Trung Quy</span></div>
+              <div class="rd-progress">
+                <div class="rd-bar"><div class="rd-bar-fill warn" style="width:50%"></div></div>
+                <div class="rd-pct">50%</div>
+              </div>
+            </div>
+            <div class="rd-desc">Đang điều chỉnh handfeel</div>
+          </div>
+
+            </div>
+            <!-- /Box 1: NPL -->
+
+            <!-- Box 2: Factory -->
+            <div class="rd-box">
+
+          <!-- Sub-group: Factory -->
+          <div class="rd-subhead first">
+            ✦ Phát triển Nhà máy <span class="vn" style="font-style:italic;color:var(--meta);letter-spacing:0;text-transform:none;font-weight:400">(Factory &amp; FOB)</span>
+          </div>
+
+          <div class="rd-item">
+            <div class="rd-item-head">
+              <div class="rd-item-name"><b>NM Trường Thịnh</b></div>
+              <div class="rd-progress">
+                <div class="rd-bar"><div class="rd-bar-fill done" style="width:100%"></div></div>
+                <div class="rd-pct done">100%</div>
+              </div>
+            </div>
+            <div class="rd-desc">Áo Basic DIA · <b>112,300 đ/áo</b> · đang test mẫu</div>
+          </div>
+
+          <div class="rd-item">
+            <div class="rd-item-head">
+              <div class="rd-item-name"><b>NM Khang Phát</b></div>
+              <div class="rd-progress">
+                <div class="rd-bar"><div class="rd-bar-fill done" style="width:100%"></div></div>
+                <div class="rd-pct done">100%</div>
+              </div>
+            </div>
+            <div class="rd-desc">Đã triển khai đơn SX áo T-shirt US Cotton</div>
+          </div>
+
+          <div class="rd-item">
+            <div class="rd-item-head">
+              <div class="rd-item-name"><b>NM Vĩnh Hưng</b></div>
+              <div class="rd-progress">
+                <div class="rd-bar"><div class="rd-bar-fill done" style="width:100%"></div></div>
+                <div class="rd-pct done">100%</div>
+              </div>
+            </div>
+            <div class="rd-desc">Đã triển khai đơn quần boxer / áo tanktop</div>
+          </div>
+
+          <div class="rd-item">
+            <div class="rd-item-head">
+              <div class="rd-item-name"><b>NCC Mitritex</b></div>
+              <div class="rd-progress">
+                <div class="rd-bar"><div class="rd-bar-fill done" style="width:100%"></div></div>
+                <div class="rd-pct done">100%</div>
+              </div>
+            </div>
+            <div class="rd-desc">Dòng vải Oxford 60/40 — chờ test labdip → triển khai đơn hàng</div>
+          </div>
+
+            </div>
+            <!-- /Box 2: Factory -->
+
+            <!-- Box 3: Wash Test -->
+            <div class="rd-box">
+
+          <!-- Sub-group: Wash Test Shipping Sample -->
+          <div class="rd-subhead first">
+            ✦ Wash Test <span class="vn" style="font-style:italic;color:var(--meta);letter-spacing:0;text-transform:none;font-weight:400">(Test giặt mẫu T4)</span>
+          </div>
+
+          <div class="rd-item">
+            <div class="rd-item-head">
+              <div class="rd-item-name"><b>NCC Trung Quy</b> — <span class="ncc">26 samples</span></div>
+              <div class="rd-progress">
+                <div class="rd-bar"><div class="rd-bar-fill warn" style="width:80.76%"></div></div>
+                <div class="rd-pct">80.76%</div>
+              </div>
+            </div>
+            <div class="rd-desc">Pass <b>21/26</b> · Fail: lỗi ngoại quan — xù lông, vón cục, màu không đồng đều</div>
+          </div>
+
+          <div class="rd-item">
+            <div class="rd-item-head">
+              <div class="rd-item-name"><b>NCC Hào Hưng</b> — <span class="ncc">8 samples</span></div>
+              <div class="rd-progress">
+                <div class="rd-bar"><div class="rd-bar-fill warn" style="width:87.5%"></div></div>
+                <div class="rd-pct">87.5%</div>
+              </div>
+            </div>
+            <div class="rd-desc">Pass <b>7/8</b> · Fail: co rút dọc <b style="color:var(--red)">8%</b> — vượt mức cho phép</div>
+          </div>
+
+            </div>
+            <!-- /Box 3: Wash Test -->
+
+            <!-- Box 4: Proto -->
+            <div class="rd-box">
+
+          <!-- Sub-group: Proto Progress -->
+          <div class="rd-subhead first">
+            ✦ Tiến độ Proto <span class="vn" style="font-style:italic;color:var(--meta);letter-spacing:0;text-transform:none;font-weight:400">(Proto Progress Q3)</span>
+          </div>
+
+          <div class="rd-item">
+            <div class="rd-item-head">
+              <div class="rd-item-name"><b>Mẫu Proto Q3</b> — <span class="ncc">Đã nhận 4/8 mẫu</span></div>
+              <div class="rd-progress">
+                <div class="rd-bar"><div class="rd-bar-fill warn" style="width:70%"></div></div>
+                <div class="rd-pct">70%</div>
+              </div>
+            </div>
+            <div class="rd-desc">Dự kiến <b style="color:var(--navy-deep)">11/05</b> hoàn thành 100%</div>
+          </div>
+
+            </div>
+            <!-- /Box 4: Proto -->
+
+          </div>
+          <!-- /4-column grid -->
+        </div>
+
+        <div class="action-card">
+          <div class="card-tag">Action <span class="vn">(Hành động)</span></div>
+          <div class="card-title">Next Month Plan <span class="vn">(Kế hoạch tháng tới)</span> — Tháng 5</div>
+          <div class="action-grid" style="grid-template-columns:repeat(3,1fr);gap:14px">
+            <div class="action-item">
+              <div class="num">01</div>
+              <div class="t"><b>Training vật liệu may</b><br>
+                <span style="color:var(--blue-soft);font-size:10px;font-style:italic;display:block;margin-top:4px">Hoàn tất tài liệu + đào tạo team</span>
+              </div>
+            </div>
+            <div class="action-item">
+              <div class="num">02</div>
+              <div class="t"><b>Proto Q3</b><br>
+                <span style="color:var(--blue-soft);font-size:10px;font-style:italic;display:block;margin-top:4px">Hoàn thành toàn bộ proto Q3</span>
+              </div>
+            </div>
+            <div class="action-item">
+              <div class="num">03</div>
+              <div class="t"><b>FOB Polo / Sơ mi</b><br>
+                <span style="color:var(--blue-soft);font-size:10px;font-style:italic;display:block;margin-top:4px">Hoàn thành phát triển FOB</span>
+              </div>
+            </div>
+            <div class="action-item">
+              <div class="num">04</div>
+              <div class="t"><b>FOB Tshirt Relax</b><br>
+                <span style="color:var(--blue-soft);font-size:10px;font-style:italic;display:block;margin-top:4px">Phát triển + tối ưu giá</span>
+              </div>
+            </div>
+            <div class="action-item">
+              <div class="num">05</div>
+              <div class="t"><b>Vải Double Face Gen 4/5</b><br>
+                <span style="color:var(--blue-soft);font-size:10px;font-style:italic;display:block;margin-top:4px">Hoàn tất phát triển 2 thế hệ</span>
+              </div>
+            </div>
+            <div class="action-item">
+              <div class="num">06</div>
+              <div class="t"><b>Kế hoạch kiểm hàng T5</b><br>
+                <span style="color:var(--blue-soft);font-size:10px;font-style:italic;display:block;margin-top:4px">Hoàn thành kiểm <b style="color:#fff">44 PO</b></span>
+              </div>
+            </div>
+            <div class="action-item">
+              <div class="num">07</div>
+              <div class="t"><b>Wash test shipping sample</b><br>
+                <span style="color:var(--blue-soft);font-size:10px;font-style:italic;display:block;margin-top:4px">Hoàn thành 100% các mẫu T5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- FOOTER -->
+  <div class="foot">
+    <span>TQC Monthly Dashboard · Apr 2026 · Confidential</span>
+    <span class="wm">POLOMANOR</span>
+  </div>
+
+</div>
+</body>
+</html>
