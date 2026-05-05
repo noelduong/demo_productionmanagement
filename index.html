@@ -5011,7 +5011,6 @@ function renderDashboardCharts(month, year) {
             <td>
               <button class="btn btn-outline" style="padding:4px 8px; font-size:0.8rem" onclick="toggleOrderDetails('${order.orderNo}', this)">Xem Chi Tiết</button>
               <button class="btn btn-primary admin-only" style="padding:4px 8px; font-size:0.8rem; background: var(--accent); border: none; margin-left: 5px;" onclick="editOrder('${order.orderNo}')">Sửa Đơn</button>
-              <button class="btn btn-primary" style="padding:4px 8px; font-size:0.8rem; background: #22c55e; border: none; margin-left: 5px;" onclick="goToNplApproval('${order.orderNo}')">Duyệt NPL</button>
             </td>
           </tr>
           <tr id="details-${order.orderNo}" style="display:none; background-color: #f8fafc;">
