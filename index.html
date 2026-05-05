@@ -6010,6 +6010,8 @@ function renderDashboardCharts(month, year) {
                 if (recDate.getTime() > targetDate.getTime()) {
                    isLate = true;
                 }
+                // Override target date with actual receiving date for display
+                d = recDate;
              } else if (daysLeft < 0) {
                 // Fallback nếu không parse được ngày nhận nhưng đã trễ so với hôm nay
                 isLate = true;
