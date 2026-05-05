@@ -5854,11 +5854,13 @@ function renderDashboardCharts(month, year) {
              if (!orderNo) return;
              // Cột "Ngày nhập"
              let dStr = r["Ngày nhập"];
-             // parse dd/mm/yyyy if needed
-             let d = new Date(dStr);
-             if (isNaN(d.getTime()) && typeof dStr === 'string') {
-               const parts = dStr.split('/');
-               if (parts.length === 3) d = new Date(parts[2], parts[1]-1, parts[0]);
+             let d = null;
+             if (typeof dStr === 'string') {
+               let m = dStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+               if (m) d = new Date(parseInt(m[3], 10), parseInt(m[2], 10) - 1, parseInt(m[1], 10));
+             }
+             if (!d) {
+               d = new Date(dStr);
              }
              if (!isNaN(d.getTime())) {
                 if (!receivedMap[orderNo] || receivedMap[orderNo] < d) {
@@ -5971,11 +5973,17 @@ function renderDashboardCharts(month, year) {
           const rawDate = item["T.Gian Giao"] ? item["T.Gian Giao"].toString() : poFallbackRawDate;
           
           if (rawDate) {
-            let td = new Date(rawDate);
-            if (!isNaN(td.getTime())) d = td;
-            else {
-              let m = rawDate.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-              if (m) d = new Date(parseInt(m[3], 10), parseInt(m[2], 10) - 1, parseInt(m[1], 10));
+            let m = rawDate.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+            if (m) {
+              d = new Date(parseInt(m[3], 10), parseInt(m[2], 10) - 1, parseInt(m[1], 10));
+            } else {
+              let mDateTime = rawDate.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})\s+/);
+              if (mDateTime) {
+                d = new Date(parseInt(mDateTime[3], 10), parseInt(mDateTime[2], 10) - 1, parseInt(mDateTime[1], 10));
+              } else {
+                let td = new Date(rawDate);
+                if (!isNaN(td.getTime())) d = td;
+              }
             }
           }
           
