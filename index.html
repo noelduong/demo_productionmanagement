@@ -3746,6 +3746,14 @@ function renderDashboardCharts(month, year) {
 }
 
 
+    function formatPODisplay(o) {
+      const monthStr = o.poMonth ? `PO tháng ${o.poMonth}` : "PO";
+      const prods = o.productNames || "Sản phẩm";
+      const colors = o.colors || "Màu";
+      const qty = o.totalQty ? `${o.totalQty.toLocaleString('vi-VN')} pcs` : "0 pcs";
+      return `[${o.orderNo}] ${monthStr} - ${prods} - ${colors} - ${qty}`;
+    }
+
     /* ================= NPL APPROVALS ================= */
     function loadNplApprovals() {
       const select = document.getElementById("nplPOSearch");
@@ -3758,11 +3766,7 @@ function renderDashboardCharts(month, year) {
             allOrdersHistory = res.data;
             let html = '<option value="">-- Chọn đơn hàng để duyệt --</option>';
             res.data.forEach(order => {
-              const po = order.orderNo;
-              const products = order.productSummary || '(Chưa cập nhật SP)';
-              const qty = order.totalQty ? ` - ${order.totalQty} pcs` : '';
-              const month = order.poMonth ? ` - Tháng ${order.poMonth}` : '';
-              html += `<option value="${po}">${po} - ${products}${qty}${month}</option>`;
+              html += `<option value="${order.orderNo}">${formatPODisplay(order)}</option>`;
             });
             select.innerHTML = html;
           }
@@ -5166,7 +5170,7 @@ function renderDashboardCharts(month, year) {
           if (res.success && res.data) {
             allOrdersHistory = res.data;
             const datalist = document.getElementById("receiveOrderList");
-            datalist.innerHTML = res.data.map(o => `<option value="${o.orderNo}">${o.partnerName} - ${formatMoney(o.total)} đ</option>`).join("");
+            datalist.innerHTML = res.data.map(o => `<option value="${o.orderNo}">${formatPODisplay(o)}</option>`).join("");
           }
         });
     }
@@ -6208,7 +6212,7 @@ function renderDashboardCharts(month, year) {
           if (res.success && res.data) {
             allOrdersHistory = res.data;
             const dl = document.getElementById("bomPOList");
-            dl.innerHTML = res.data.map(o => `<option value="${o.orderNo}">${o.partnerName} - ${formatMoney(o.total)} đ</option>`).join("");
+            dl.innerHTML = res.data.map(o => `<option value="${o.orderNo}">${formatPODisplay(o)}</option>`).join("");
           }
         });
     }
