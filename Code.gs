@@ -304,7 +304,13 @@ function getOrderHistory() {
     if (data.length <= 1) return [];
     
     const results = [];
+    const seenOrders = new Set();
+    
     for (let i = data.length - 1; i > 0; i--) {
+      const orderNo = String(data[i][1]).trim();
+      if (!orderNo || seenOrders.has(orderNo)) continue;
+      seenOrders.add(orderNo);
+      
       // Xử lý định dạng tháng (nếu là Date object từ Sheet)
       let m = data[i][11] || "";
       if (m instanceof Date) {
@@ -316,7 +322,7 @@ function getOrderHistory() {
 
       results.push({
         timestamp: data[i][0],
-        orderNo: data[i][1],
+        orderNo: orderNo,
         orderDate: data[i][2],
         creatorName: data[i][3],
         companyName: data[i][4],

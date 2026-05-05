@@ -5940,6 +5940,15 @@ function renderDashboardCharts(month, year) {
       calAllItems = [];
       allOrders.forEach(order => {
         if (!order.details || order.details.length === 0) return;
+        // Find a fallback delivery date from ANY item in this PO
+        let poFallbackRawDate = "";
+        for (let it of order.details) {
+           if (it["T.Gian Giao"]) {
+              poFallbackRawDate = it["T.Gian Giao"].toString();
+              break;
+           }
+        }
+
         order.details.forEach((item, index) => {
           // Skip if any status is marked as "Cancel"
           const itemVai = String(item["Trạng thái Vải"] || "").toLowerCase();
@@ -5959,7 +5968,7 @@ function renderDashboardCharts(month, year) {
           }
 
           let d = null;
-          const rawDate = item["T.Gian Giao"] ? item["T.Gian Giao"].toString() : "";
+          const rawDate = item["T.Gian Giao"] ? item["T.Gian Giao"].toString() : poFallbackRawDate;
           
           if (rawDate) {
             let td = new Date(rawDate);
