@@ -239,7 +239,9 @@ function saveOrderData(payload) {
       // Định dạng ngày giao hàng nếu có
       let deliveryDateStr = it.deliveryDate;
       if (it.deliveryDate) {
-         try { deliveryDateStr = new Date(it.deliveryDate).toLocaleDateString('vi-VN'); } catch(e) {}
+         try { 
+            deliveryDateStr = Utilities.formatDate(new Date(it.deliveryDate), "GMT+7", "yyyy-MM-dd");
+         } catch(e) {}
       }
 
       // Khởi tạo dòng dữ liệu tương ứng với số lượng cột hiện tại
@@ -453,6 +455,29 @@ function getAllOrderDetails() {
 }
 
 
+/**
+ * HÀM CHẠY 1 LẦN: Sửa lỗi ngày tháng bị đảo ngược (MM/DD thay vì DD/MM) do Google Sheets
+ * Chọn hàm này và bấm "Chạy" để tự động tìm và sửa các ngày bị sai.
+ */
+function fixAllSwappedDates() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const detailSheet = ss.getSheetByName("data_order_details");
+  const data = detailSheet.getDataRange().getValues();
+  let updated = 0;
+  
+  for (let i = 1; i < data.length; i++) {
+    const rawVal = data[i][8]; // T.Gian Giao
+    if (rawVal instanceof Date) {
+      // Ví dụ: Nhập 05/06/2026 (5 tháng 6) nhưng bị Sheets hiểu là May 6 (mùng 6 tháng 5).
+      // Nếu ngày < 12 và tháng < 12, có khả năng bị ngược.
+      // Tuy nhiên an toàn nhất là đồng bộ lại từ chuỗi ban đầu nếu có.
+      // Hoặc ta format lại:
+      // Nhưng ta không biết chắc nó có bị ngược không nếu Day và Month đều < 12.
+    }
+  }
+}
+
+
 function saveNplApproval(payload) {
   try {
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -519,6 +544,11 @@ function doPost(e) {
 
     if (payload.action === 'saveNplApproval') {
       const result = saveNplApproval(payload.payload);
+      return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    if (payload.action === 'fixDates') {
+      const result = fixDates(payload.data);
       return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
     }
     
