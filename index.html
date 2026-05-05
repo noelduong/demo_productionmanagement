@@ -3748,8 +3748,8 @@ function renderDashboardCharts(month, year) {
 
     function formatPODisplay(o) {
       const monthStr = o.poMonth ? `PO tháng ${o.poMonth}` : "PO";
-      const prods = o.productNames || "Sản phẩm";
-      const colors = o.colors || "Màu";
+      const prods = o.productSummary || o.productNames || "Sản phẩm";
+      const colors = o.colorSummary || o.colors || "Màu";
       const qty = o.totalQty ? `${o.totalQty.toLocaleString('vi-VN')} pcs` : "0 pcs";
       return `[${o.orderNo}] ${monthStr} - ${prods} - ${colors} - ${qty}`;
     }
