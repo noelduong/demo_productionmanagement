@@ -12,43 +12,62 @@ const IMAGE_FOLDER_ID = "1nGoPHciSLOJuBqSPCvPX1E6WW6X5vzDI";
 function syncProductImages() {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   
-  // 1. Đọc tất cả file ảnh trong folder
-  const folder = DriveApp.getFolderById(IMAGE_FOLDER_ID);
-  const files = folder.getFiles();
-  const imageMap = {}; // filename (không ext) -> URL
+  // 1. Đọc tất cả file ảnh trong folder + folder con (đệ quy)
+  const rootFolder = DriveApp.getFolderById(IMAGE_FOLDER_ID);
+  const imageMap = {}; // key (uppercase) -> image info
   const allImages = [];
   
-  while (files.hasNext()) {
-    const file = files.next();
-    const mimeType = file.getMimeType();
+  function scanFolder(folder, folderName) {
+    // Quét file ảnh trong folder hiện tại
+    const files = folder.getFiles();
+    while (files.hasNext()) {
+      const file = files.next();
+      const mimeType = file.getMimeType();
+      if (!mimeType.startsWith("image/")) continue;
+      
+      const fileName = file.getName();
+      const fileId = file.getId();
+      const imageUrl = "https://drive.google.com/uc?export=view&id=" + fileId;
+      const thumbUrl = "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w200";
+      const baseName = fileName.replace(/\.[^/.]+$/, "").trim().toUpperCase();
+      
+      // Lưu mapping theo cả tên file và tên folder con
+      imageMap[baseName] = {
+        fileName: fileName,
+        fileId: fileId,
+        imageUrl: imageUrl,
+        thumbUrl: thumbUrl,
+        mimeType: mimeType,
+        folderName: folderName
+      };
+      
+      // Cũng map theo tên folder con (thường đặt theo Art Code / tên SP)
+      if (folderName) {
+        const folderKey = folderName.trim().toUpperCase();
+        if (!imageMap[folderKey]) {
+          imageMap[folderKey] = imageMap[baseName];
+        }
+      }
+      
+      allImages.push({
+        fileName: fileName,
+        baseName: baseName,
+        fileId: fileId,
+        imageUrl: imageUrl,
+        thumbUrl: thumbUrl,
+        folderName: folderName
+      });
+    }
     
-    // Chỉ lấy file ảnh
-    if (!mimeType.startsWith("image/")) continue;
-    
-    const fileName = file.getName();
-    const fileId = file.getId();
-    const imageUrl = "https://drive.google.com/uc?export=view&id=" + fileId;
-    const thumbUrl = "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w200";
-    
-    // Tên file không có extension (dùng để match)
-    const baseName = fileName.replace(/\.[^/.]+$/, "").trim().toUpperCase();
-    
-    imageMap[baseName] = {
-      fileName: fileName,
-      fileId: fileId,
-      imageUrl: imageUrl,
-      thumbUrl: thumbUrl,
-      mimeType: mimeType
-    };
-    
-    allImages.push({
-      fileName: fileName,
-      baseName: baseName,
-      fileId: fileId,
-      imageUrl: imageUrl,
-      thumbUrl: thumbUrl
-    });
+    // Đệ quy vào các folder con
+    const subFolders = folder.getFolders();
+    while (subFolders.hasNext()) {
+      const sub = subFolders.next();
+      scanFolder(sub, sub.getName());
+    }
   }
+  
+  scanFolder(rootFolder, "");
   
   Logger.log("Tìm thấy " + allImages.length + " ảnh trong folder");
   
@@ -59,7 +78,7 @@ function syncProductImages() {
   }
   imgSheet.clearContents();
   
-  const imgHeaders = ["Tên file", "Key (uppercase)", "File ID", "URL Ảnh gốc", "URL Thumbnail"];
+  const imgHeaders = ["Tên file", "Key (uppercase)", "Folder", "File ID", "URL Ảnh gốc", "URL Thumbnail"];
   imgSheet.getRange(1, 1, 1, imgHeaders.length).setValues([imgHeaders]);
   imgSheet.getRange(1, 1, 1, imgHeaders.length).setFontWeight("bold").setBackground("#fce5cd");
   imgSheet.setFrozenRows(1);
@@ -68,6 +87,7 @@ function syncProductImages() {
     const imgData = allImages.map(img => [
       img.fileName,
       img.baseName,
+      img.folderName || "",
       img.fileId,
       img.imageUrl,
       img.thumbUrl
