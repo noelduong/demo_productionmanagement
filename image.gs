@@ -92,9 +92,16 @@ function scanImages() {
       img.baseName,
       img.folderName,
       img.fileId,
-      "https://drive.google.com/thumbnail?id=" + img.fileId + "&sz=w200"
+      "https://lh3.googleusercontent.com/d/" + img.fileId
     ]);
     imgSheet.getRange(2, 1, rows.length, h.length).setValues(rows);
+  }
+  
+  // Set chia sẻ folder để ảnh hiển thị được
+  try {
+    rootFolder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  } catch(e) {
+    Logger.log("Không thể set sharing folder: " + e);
   }
   
   SpreadsheetApp.getUi().alert("Scan xong! Tìm thấy " + allImages.length + " ảnh.");
@@ -115,22 +122,22 @@ function matchImages() {
   }
   const imgData = imgSheet.getDataRange().getValues();
   
-  // Build lookup: key -> thumbUrl (theo tên file, folder name)
+  // Build lookup: key -> imageUrl (theo tên file, folder name)
   const imageMap = {};
   for (let i = 1; i < imgData.length; i++) {
     const baseName = String(imgData[i][1]).trim().toUpperCase();
     const folderName = String(imgData[i][2]).trim().toUpperCase();
-    const thumbUrl = imgData[i][4];
+    const imageUrl = String(imgData[i][4]).trim();
     
-    if (baseName && !imageMap[baseName]) imageMap[baseName] = thumbUrl;
-    if (folderName && !imageMap[folderName]) imageMap[folderName] = thumbUrl;
+    if (baseName && !imageMap[baseName]) imageMap[baseName] = imageUrl;
+    if (folderName && !imageMap[folderName]) imageMap[folderName] = imageUrl;
     
     // Cũng map theo phần folder cuối (sau dấu /)
     if (folderName.includes("/")) {
       const parts = folderName.split("/");
       parts.forEach(p => {
         const k = p.trim();
-        if (k && !imageMap[k]) imageMap[k] = thumbUrl;
+        if (k && !imageMap[k]) imageMap[k] = imageUrl;
       });
     }
   }
@@ -190,13 +197,25 @@ function matchImages() {
       }
     }
     
-    updates.push([url || ""]);
-    if (url) matchCount++;
+    // Ghi công thức =IMAGE() để Sheets hiển thị ảnh trực tiếp
+    if (url) {
+      updates.push(['=IMAGE("' + url + '",1)']);
+      matchCount++;
+    } else {
+      updates.push([""]);
+    }
   }
   
-  // Ghi tất cả một lần (nhanh hơn ghi từng dòng)
+  // Ghi từng dòng: formula cho ảnh, trống cho không match
   if (updates.length > 0) {
-    detailSheet.getRange(2, imgColIdx + 1, updates.length, 1).setValues(updates);
+    for (let i = 0; i < updates.length; i++) {
+      const cell = detailSheet.getRange(i + 2, imgColIdx + 1);
+      if (updates[i][0]) {
+        cell.setFormula(updates[i][0]);
+      } else {
+        cell.setValue("");
+      }
+    }
   }
   
   SpreadsheetApp.getUi().alert(
