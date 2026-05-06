@@ -57,7 +57,7 @@ function saveOrderData(payload) {
     
     // 1. Lưu thông tin chung vào tab data_order
     let orderSheet = ss.getSheetByName("data_order");
-    const ORDER_HEADERS = ["Thời gian lưu", "Mã đơn hàng", "Ngày đặt hàng", "Người tạo", "Công ty", "Nhà cung cấp", "Địa chỉ NCC", "Thuế VAT (%)", "Tổng tạm tính", "Tiền VAT", "Tổng cộng", "PO Tháng", "Trạng thái Vải", "Hạn Duyệt (D+18)", "Hạn Cắt Vải (D+21)", "Hạn Lên Chuyền (D+22)", "Hạn Hoàn Thành (D+27)", "Trạng thái Bo", "Trạng thái NPL", "Ngày Đồng Bộ", "Ghi Chú", "Tổng SL", "Danh sách SP", "Danh sách Màu"];
+    const ORDER_HEADERS = ["Thời gian lưu", "Mã đơn hàng", "Ngày đặt hàng", "Người tạo", "Công ty", "Nhà cung cấp", "Địa chỉ NCC", "Thuế VAT (%)", "Tổng tạm tính", "Tiền VAT", "Tổng cộng", "PO Tháng", "Phân Loại ĐH", "Phân Cấp SP", "Trạng thái Vải", "Hạn Duyệt (D+18)", "Hạn Cắt Vải (D+21)", "Hạn Lên Chuyền (D+22)", "Hạn Hoàn Thành (D+27)", "Trạng thái Bo", "Trạng thái NPL", "Ngày Đồng Bộ", "Ghi Chú", "Tổng SL", "Danh sách SP", "Danh sách Màu"];
     if (!orderSheet) {
       orderSheet = ss.insertSheet("data_order");
     }
@@ -93,13 +93,13 @@ function saveOrderData(payload) {
     let statusVai = "Pending", statusBo = "Pending", statusNpl = "Pending";
     if (orderRowIndex !== -1) {
        let existingData = orderDataRange[orderRowIndex - 1];
-       if (existingData[12]) statusVai = existingData[12];
-       if (existingData[13]) d18 = existingData[13];
-       if (existingData[14]) d21 = existingData[14];
-       if (existingData[15]) d22 = existingData[15];
-       if (existingData[16]) d27 = existingData[16];
-       if (existingData[17]) statusBo = existingData[17];
-       if (existingData[18]) statusNpl = existingData[18];
+       if (existingData[14]) statusVai = existingData[14];
+       if (existingData[15]) d18 = existingData[15];
+       if (existingData[16]) d21 = existingData[16];
+       if (existingData[17]) d22 = existingData[17];
+       if (existingData[18]) d27 = existingData[18];
+       if (existingData[19]) statusBo = existingData[19];
+       if (existingData[20]) statusNpl = existingData[20];
     }
 
     // Tính tổng số lượng, danh sách sản phẩm và chi tiết màu
@@ -123,9 +123,10 @@ function saveOrderData(payload) {
       timestamp, payload.orderNo, payload.orderDate, payload.creatorName, payload.companyName,
       payload.partnerName, payload.partnerAddress, payload.vatRate, payload.subtotal,
       payload.vatAmount, payload.total, payload.poMonth || "",
+      payload.orderType || "", payload.productTier || "",
       statusVai, d18, d21, d22, d27, statusBo, statusNpl,
-      orderRowIndex !== -1 && orderDataRange[orderRowIndex - 1][19] ? orderDataRange[orderRowIndex - 1][19] : "",
-      orderRowIndex !== -1 && orderDataRange[orderRowIndex - 1][20] ? orderDataRange[orderRowIndex - 1][20] : "",
+      orderRowIndex !== -1 && orderDataRange[orderRowIndex - 1][21] ? orderDataRange[orderRowIndex - 1][21] : "",
+      orderRowIndex !== -1 && orderDataRange[orderRowIndex - 1][22] ? orderDataRange[orderRowIndex - 1][22] : "",
       totalQty, productSummary, colorSummary
     ];
     

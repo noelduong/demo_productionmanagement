@@ -724,6 +724,24 @@
             <input type="month" id="poMonth" />
           </div>
           <div class="form-group">
+            <label>Phân Loại ĐH</label>
+            <select id="orderType" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:0.95rem;background:#fff;">
+              <option value="">-- Chọn --</option>
+              <option value="NEW IN">NEW IN</option>
+              <option value="RESTOCK">RESTOCK</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Phân Cấp SP</label>
+            <select id="productTier" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:0.95rem;background:#fff;">
+              <option value="">-- Chọn --</option>
+              <option value="NEWIN">NEWIN</option>
+              <option value="CHỦ LỰC">CHỦ LỰC</option>
+              <option value="DUY TRÌ">DUY TRÌ</option>
+              <option value="PHỄU">PHỄU</option>
+            </select>
+          </div>
+          <div class="form-group">
             <label>Tên Công Ty <span style="color: var(--danger)">*</span></label>
             <input id="companyName" placeholder="Tên pháp nhân công ty..." />
           </div>
@@ -2512,6 +2530,8 @@ function formatPODisplay(o) {
         orderNo: document.getElementById("orderNo").value,
         orderDate: document.getElementById("orderDate").value,
         poMonth: document.getElementById("poMonth").value,
+        orderType: document.getElementById("orderType").value,
+        productTier: document.getElementById("productTier").value,
         creatorName: document.getElementById("creatorName").value,
         companyName: company,
         partnerName: partner,
@@ -2541,6 +2561,8 @@ function formatPODisplay(o) {
                 isEditMode = false;
                 document.getElementById('orderNo').readOnly = false;
                 document.getElementById('orderForm').reset();
+                document.getElementById('orderType').value = "";
+                document.getElementById('productTier').value = "";
                 renderPreview();
                 generateOrderNo();
                 initDateFields();
@@ -2697,6 +2719,8 @@ function formatPODisplay(o) {
             } catch (e) { }
 
             document.getElementById('poMonth').value = order.poMonth || "";
+            document.getElementById('orderType').value = order.orderType || "";
+            document.getElementById('productTier').value = order.productTier || "";
             document.getElementById('creatorName').value = order.creatorName || "";
             document.getElementById('companyName').value = order.companyName || "";
 
