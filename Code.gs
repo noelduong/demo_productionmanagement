@@ -184,22 +184,21 @@ function saveOrderData(payload) {
     }
     
     // Hàm chuẩn hóa size - gộp size chữ và size số vào cùng cột
-    // Kết quả: S, M/29, L/30, XL/31, XXL/32, 34
+    // Kết quả: S/29, M/30, L/31, XL/32, XXL/34, 34, FREE
     function normalizeSize(size) {
       let s = String(size).toUpperCase().trim();
       s = s.replace(/\.0$/, '');
-      if (s === 'S') return 'S';
-      if (s === 'M' || s === '29') return 'M/29';
-      if (s === 'L' || s === '30') return 'L/30';
-      if (s === 'XL' || s === '31') return 'XL/31';
-      if (s === 'XXL' || s === '2XL' || s === '32') return 'XXL/32';
-      if (s === '34') return '34';
+      if (s === 'S' || s === 'S/29' || s === '29') return 'S/29';
+      if (s === 'M' || s === 'M/29' || s === 'M/30' || s === '30') return 'M/30';
+      if (s === 'L' || s === 'L/30' || s === 'L/31' || s === '31') return 'L/31';
+      if (s === 'XL' || s === 'XL/31' || s === 'XL/32' || s === '32') return 'XL/32';
+      if (s === 'XXL' || s === '2XL' || s === 'XXL/32' || s === 'XXL/34' || s === '34') return 'XXL/34';
       if (s === 'FREESIZE') return 'FREE';
       return s;
     }
 
     // Thứ tự cột size cố định
-    const SIZE_ORDER = ['S', 'M/29', 'L/30', 'XL/31', 'XXL/32', '34', 'FREE'];
+    const SIZE_ORDER = ['S/29', 'M/30', 'L/31', 'XL/32', 'XXL/34', 'FREE'];
 
     // Quét qua tất cả các size để thêm cột mới vào header nếu cần
     const neededSizes = new Set();
@@ -599,17 +598,16 @@ function saveReceivingData(payload) {
     function normalizeSize(size) {
       let s = String(size).toUpperCase().trim();
       s = s.replace(/\.0$/, '');
-      if (s === 'S') return 'S';
-      if (s === 'M' || s === '29') return 'M/29';
-      if (s === 'L' || s === '30') return 'L/30';
-      if (s === 'XL' || s === '31') return 'XL/31';
-      if (s === 'XXL' || s === '2XL' || s === '32') return 'XXL/32';
-      if (s === '34') return '34';
+      if (s === 'S' || s === 'S/29' || s === '29') return 'S/29';
+      if (s === 'M' || s === 'M/29' || s === 'M/30' || s === '30') return 'M/30';
+      if (s === 'L' || s === 'L/30' || s === 'L/31' || s === '31') return 'L/31';
+      if (s === 'XL' || s === 'XL/31' || s === 'XL/32' || s === '32') return 'XL/32';
+      if (s === 'XXL' || s === '2XL' || s === 'XXL/32' || s === 'XXL/34' || s === '34') return 'XXL/34';
       if (s === 'FREESIZE') return 'FREE';
       return s;
     }
 
-    const SIZE_ORDER = ['S', 'M/29', 'L/30', 'XL/31', 'XXL/32', '34', 'FREE'];
+    const SIZE_ORDER = ['S/29', 'M/30', 'L/31', 'XL/32', 'XXL/34', 'FREE'];
     const neededSizes = new Set();
     
     items.forEach(it => {
@@ -888,7 +886,7 @@ function masterImportFromCSV() {
   // 1. IMPORT data_order_details
   var detailSheet = ss.getSheetByName("data_order_details");
   if (!detailSheet) detailSheet = ss.insertSheet("data_order_details");
-  var detailHeaders = ["Mã đơn hàng","Tên SP","Art Code","Màu","Tổng SL","Đơn giá","Thành tiền (trước VAT)","Thông tin NPL","T.Gian Giao","Ghi Chú","Trạng thái Vải","Trạng thái Bo","Đồng bộ NPL","Ngày đồng bộ","Ghi chú duyệt","Size S","Size M/29","Size L/30","Size XL/31","Size XXL/32","Size 34","Size FREE"];
+  var detailHeaders = ["Mã đơn hàng","Tên SP","Art Code","Màu","Tổng SL","Đơn giá","Thành tiền (trước VAT)","Thông tin NPL","T.Gian Giao","Ghi Chú","Trạng thái Vải","Trạng thái Bo","Đồng bộ NPL","Ngày đồng bộ","Ghi chú duyệt","Size S/29","Size M/30","Size L/31","Size XL/32","Size XXL/34","Size FREE"];
   detailSheet.clearContents();
   detailSheet.getRange(1,1,1,detailHeaders.length).setValues([detailHeaders]);
   detailSheet.getRange(1,1,1,detailHeaders.length).setFontWeight("bold").setBackground("#fff2cc");
