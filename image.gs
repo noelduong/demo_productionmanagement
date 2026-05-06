@@ -7,7 +7,7 @@
  *   Bước 2: Chạy matchImages()  → match ảnh vào data_order_details
  */
 
-const IMAGE_FOLDER_ID = "1nGoPHciSLOJuBqSPCvPX1E6WW6X5vzDI";
+const IMAGE_FOLDER_ID = "1kTunkTKY_YekEiTWEmB52SZWN6qxSaIN";
 
 /**
  * BƯỚC 1: Chỉ quét folder Drive (cấp 1 + cấp 2) và lưu vào sheet data_images.
