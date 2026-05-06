@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import ssl
 
 csv_file = 'PP_ KHSX TOTAL 26 - DATA Đặt Hàng 2026.csv'
-url = 'https://script.google.com/macros/s/AKfycbxXe57opBzPLN8M7TwA_bI0qPtq4ZwLe8N2bAwGQ_bXzdbszB-zZ1oDhBQ2fRJ3xAPIag/exec'
+url = 'https://script.google.com/macros/s/AKfycbyCUwPQbji4QRXS4E7KRQ3PERxlu-IByYSdJCXgeLucxFupJukqLq_0CdXKZpC7okKHsQ/exec'
 
 ctx = ssl.create_default_context()
 ctx.check_hostname = False
@@ -41,8 +41,8 @@ for row_idx, row in enumerate(data_rows):
         # Parse sizes
         sizeData = {}
         # S(9), M(10), L(11), XL(12), XXL(13)
-        for s_idx, size_name in [(9, 'S'), (10, 'M'), (11, 'L'), (12, 'XL'), (13, 'XXL')]:
-            val = row[s_idx].strip().replace('.', '')
+        for s_idx, size_name in [(9, 'S'), (10, 'M/29'), (11, 'L/30'), (12, 'XL/31'), (13, 'XXL/32')]:
+            val = row[s_idx].strip().replace('.', '').replace(',', '')
             if val and val.isdigit():
                 sizeData[size_name] = int(val)
                 
@@ -50,6 +50,9 @@ for row_idx, row in enumerate(data_rows):
         qty = int(qty_str) if qty_str else 0
         if not sizeData and qty > 0:
             sizeData['FREE'] = qty
+        # Also convert quantity strings with dots (thousand separators)
+        qty_str_clean = row[14].strip().replace('.', '').replace(',', '')
+        qty = int(qty_str_clean) if qty_str_clean and qty_str_clean.isdigit() else qty
         
         price_str = row[15].strip().replace('.', '').replace(',', '.').replace(' đ', '').replace('đ', '')
         unit_price = float(price_str) if price_str else 0
