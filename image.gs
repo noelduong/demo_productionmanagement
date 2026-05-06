@@ -1,104 +1,144 @@
 /**
  * image.gs — Đổ hình ảnh sản phẩm từ Google Drive vào Sheet
  * Drive Folder: https://drive.google.com/drive/u/0/folders/1nGoPHciSLOJuBqSPCvPX1E6WW6X5vzDI
+ * 
+ * CÁCH DÙNG:
+ *   Bước 1: Chạy scanImages()   → quét folder, lưu vào sheet data_images
+ *   Bước 2: Chạy matchImages()  → match ảnh vào data_order_details
  */
 
 const IMAGE_FOLDER_ID = "1nGoPHciSLOJuBqSPCvPX1E6WW6X5vzDI";
 
 /**
- * HÀM CHÍNH: Quét folder Drive, tạo sheet mapping hình ảnh,
- * và cập nhật cột "Hình ảnh" trong data_order_details.
+ * BƯỚC 1: Chỉ quét folder Drive (cấp 1 + cấp 2) và lưu vào sheet data_images.
+ * Lấy ảnh đầu tiên của mỗi folder con làm đại diện.
  */
-function syncProductImages() {
+function scanImages() {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  
-  // 1. Đọc tất cả file ảnh trong folder + folder con (đệ quy)
   const rootFolder = DriveApp.getFolderById(IMAGE_FOLDER_ID);
-  const imageMap = {}; // key (uppercase) -> image info
   const allImages = [];
   
-  function scanFolder(folder, folderName) {
-    // Quét file ảnh trong folder hiện tại
-    const files = folder.getFiles();
-    while (files.hasNext()) {
-      const file = files.next();
-      const mimeType = file.getMimeType();
-      if (!mimeType.startsWith("image/")) continue;
-      
-      const fileName = file.getName();
-      const fileId = file.getId();
-      const imageUrl = "https://drive.google.com/uc?export=view&id=" + fileId;
-      const thumbUrl = "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w200";
-      const baseName = fileName.replace(/\.[^/.]+$/, "").trim().toUpperCase();
-      
-      // Lưu mapping theo cả tên file và tên folder con
-      imageMap[baseName] = {
-        fileName: fileName,
-        fileId: fileId,
-        imageUrl: imageUrl,
-        thumbUrl: thumbUrl,
-        mimeType: mimeType,
-        folderName: folderName
-      };
-      
-      // Cũng map theo tên folder con (thường đặt theo Art Code / tên SP)
-      if (folderName) {
-        const folderKey = folderName.trim().toUpperCase();
-        if (!imageMap[folderKey]) {
-          imageMap[folderKey] = imageMap[baseName];
-        }
-      }
-      
+  // Quét ảnh ở folder gốc
+  const rootFiles = rootFolder.getFiles();
+  while (rootFiles.hasNext()) {
+    const file = rootFiles.next();
+    if (!file.getMimeType().startsWith("image/")) continue;
+    allImages.push({
+      fileName: file.getName(),
+      baseName: file.getName().replace(/\.[^/.]+$/, "").trim(),
+      folderName: "",
+      fileId: file.getId()
+    });
+  }
+  
+  // Quét folder con cấp 1: lấy ảnh đầu tiên làm đại diện
+  const subFolders = rootFolder.getFolders();
+  while (subFolders.hasNext()) {
+    const sub = subFolders.next();
+    const subName = sub.getName();
+    const subFiles = sub.getFiles();
+    let count = 0;
+    
+    while (subFiles.hasNext()) {
+      const file = subFiles.next();
+      if (!file.getMimeType().startsWith("image/")) continue;
+      count++;
       allImages.push({
-        fileName: fileName,
-        baseName: baseName,
-        fileId: fileId,
-        imageUrl: imageUrl,
-        thumbUrl: thumbUrl,
-        folderName: folderName
+        fileName: file.getName(),
+        baseName: file.getName().replace(/\.[^/.]+$/, "").trim(),
+        folderName: subName,
+        fileId: file.getId()
       });
+      // Giới hạn 5 ảnh mỗi folder con để tránh timeout
+      if (count >= 5) break;
     }
     
-    // Đệ quy vào các folder con
-    const subFolders = folder.getFolders();
-    while (subFolders.hasNext()) {
-      const sub = subFolders.next();
-      scanFolder(sub, sub.getName());
+    // Quét folder cháu (cấp 2) nếu có
+    const grandFolders = sub.getFolders();
+    while (grandFolders.hasNext()) {
+      const grand = grandFolders.next();
+      const grandName = grand.getName();
+      const grandFiles = grand.getFiles();
+      let gCount = 0;
+      
+      while (grandFiles.hasNext()) {
+        const file = grandFiles.next();
+        if (!file.getMimeType().startsWith("image/")) continue;
+        gCount++;
+        allImages.push({
+          fileName: file.getName(),
+          baseName: file.getName().replace(/\.[^/.]+$/, "").trim(),
+          folderName: subName + "/" + grandName,
+          fileId: file.getId()
+        });
+        if (gCount >= 3) break;
+      }
     }
   }
   
-  scanFolder(rootFolder, "");
-  
-  Logger.log("Tìm thấy " + allImages.length + " ảnh trong folder");
-  
-  // 2. Tạo/cập nhật sheet mapping ảnh
+  // Lưu vào sheet
   let imgSheet = ss.getSheetByName("data_images");
-  if (!imgSheet) {
-    imgSheet = ss.insertSheet("data_images");
-  }
+  if (!imgSheet) imgSheet = ss.insertSheet("data_images");
   imgSheet.clearContents();
   
-  const imgHeaders = ["Tên file", "Key (uppercase)", "Folder", "File ID", "URL Ảnh gốc", "URL Thumbnail"];
-  imgSheet.getRange(1, 1, 1, imgHeaders.length).setValues([imgHeaders]);
-  imgSheet.getRange(1, 1, 1, imgHeaders.length).setFontWeight("bold").setBackground("#fce5cd");
+  const h = ["Tên file", "Key", "Folder", "File ID", "URL Thumbnail"];
+  imgSheet.getRange(1, 1, 1, h.length).setValues([h]);
+  imgSheet.getRange(1, 1, 1, h.length).setFontWeight("bold").setBackground("#fce5cd");
   imgSheet.setFrozenRows(1);
   
   if (allImages.length > 0) {
-    const imgData = allImages.map(img => [
+    const rows = allImages.map(img => [
       img.fileName,
       img.baseName,
-      img.folderName || "",
+      img.folderName,
       img.fileId,
-      img.imageUrl,
-      img.thumbUrl
+      "https://drive.google.com/thumbnail?id=" + img.fileId + "&sz=w200"
     ]);
-    imgSheet.getRange(2, 1, imgData.length, imgHeaders.length).setValues(imgData);
+    imgSheet.getRange(2, 1, rows.length, h.length).setValues(rows);
   }
   
-  // 3. Cập nhật cột "Hình ảnh" trong data_order_details (nếu có)
+  SpreadsheetApp.getUi().alert("Scan xong! Tìm thấy " + allImages.length + " ảnh.");
+}
+
+/**
+ * BƯỚC 2: Match ảnh từ data_images vào data_order_details.
+ * Đọc sheet data_images (đã tạo ở bước 1) và gán URL vào cột "Hình ảnh".
+ */
+function matchImages() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  
+  // Đọc data_images
+  const imgSheet = ss.getSheetByName("data_images");
+  if (!imgSheet) {
+    SpreadsheetApp.getUi().alert("Chưa có data_images. Hãy chạy scanImages() trước!");
+    return;
+  }
+  const imgData = imgSheet.getDataRange().getValues();
+  
+  // Build lookup: key -> thumbUrl (theo tên file, folder name)
+  const imageMap = {};
+  for (let i = 1; i < imgData.length; i++) {
+    const baseName = String(imgData[i][1]).trim().toUpperCase();
+    const folderName = String(imgData[i][2]).trim().toUpperCase();
+    const thumbUrl = imgData[i][4];
+    
+    if (baseName && !imageMap[baseName]) imageMap[baseName] = thumbUrl;
+    if (folderName && !imageMap[folderName]) imageMap[folderName] = thumbUrl;
+    
+    // Cũng map theo phần folder cuối (sau dấu /)
+    if (folderName.includes("/")) {
+      const parts = folderName.split("/");
+      parts.forEach(p => {
+        const k = p.trim();
+        if (k && !imageMap[k]) imageMap[k] = thumbUrl;
+      });
+    }
+  }
+  
+  // Đọc data_order_details
   const detailSheet = ss.getSheetByName("data_order_details");
   if (!detailSheet) {
-    SpreadsheetApp.getUi().alert("Đã lưu " + allImages.length + " ảnh vào sheet data_images.\nKhông tìm thấy data_order_details để cập nhật.");
+    SpreadsheetApp.getUi().alert("Không tìm thấy data_order_details!");
     return;
   }
   
@@ -108,117 +148,75 @@ function syncProductImages() {
   // Tìm hoặc thêm cột "Hình ảnh"
   let imgColIdx = headers.indexOf("Hình ảnh");
   if (imgColIdx === -1) {
-    // Thêm cột mới vào vị trí sau "Art Code" (col 2) hoặc cuối
-    const artCodeIdx = headers.indexOf("Art Code");
-    if (artCodeIdx >= 0) {
-      // Thêm sau Art Code
-      imgColIdx = artCodeIdx + 1;
-      detailSheet.insertColumnAfter(imgColIdx + 1);
-      // Re-read headers
-      const newHeaders = detailSheet.getRange(1, 1, 1, detailSheet.getLastColumn()).getValues()[0];
-      detailSheet.getRange(1, imgColIdx + 1).setValue("Hình ảnh");
-    } else {
-      // Thêm vào cuối
-      imgColIdx = headers.length;
-      detailSheet.getRange(1, imgColIdx + 1).setValue("Hình ảnh");
-    }
+    imgColIdx = headers.length;
+    detailSheet.getRange(1, imgColIdx + 1).setValue("Hình ảnh");
     detailSheet.getRange(1, imgColIdx + 1).setFontWeight("bold").setBackground("#fff2cc");
   }
   
-  // 4. Match ảnh với sản phẩm
-  // Thử match theo: Art Code, Tên SP, hoặc Art Code + Màu
+  // Match
   let matchCount = 0;
+  const updates = [];
   
   for (let i = 1; i < detailData.length; i++) {
     const tenSP = String(detailData[i][1] || "").trim().toUpperCase();
     const artCode = String(detailData[i][2] || "").trim().toUpperCase();
     const mau = String(detailData[i][3] || "").trim().toUpperCase();
     
-    let matched = null;
+    let url = null;
     
-    // Thử match chính xác theo Art Code
-    if (artCode && imageMap[artCode]) {
-      matched = imageMap[artCode];
-    }
-    // Thử match theo Tên SP
-    if (!matched && tenSP && imageMap[tenSP]) {
-      matched = imageMap[tenSP];
-    }
-    // Thử match theo Art Code + Màu
-    if (!matched && artCode && mau) {
-      const combo = artCode + "_" + mau;
-      if (imageMap[combo]) matched = imageMap[combo];
-      const combo2 = artCode + " " + mau;
-      if (!matched && imageMap[combo2]) matched = imageMap[combo2];
-    }
-    // Thử match theo Tên SP + Màu
-    if (!matched && tenSP && mau) {
-      const combo = tenSP + "_" + mau;
-      if (imageMap[combo]) matched = imageMap[combo];
-      const combo2 = tenSP + " " + mau;
-      if (!matched && imageMap[combo2]) matched = imageMap[combo2];
-    }
-    // Partial match: tên file chứa Art Code
-    if (!matched && artCode) {
+    // Thử match theo thứ tự ưu tiên
+    if (artCode && imageMap[artCode]) url = imageMap[artCode];
+    if (!url && tenSP && imageMap[tenSP]) url = imageMap[tenSP];
+    if (!url && artCode && mau && imageMap[artCode + "_" + mau]) url = imageMap[artCode + "_" + mau];
+    if (!url && artCode && mau && imageMap[artCode + " " + mau]) url = imageMap[artCode + " " + mau];
+    if (!url && tenSP && mau && imageMap[tenSP + "_" + mau]) url = imageMap[tenSP + "_" + mau];
+    if (!url && tenSP && mau && imageMap[tenSP + " " + mau]) url = imageMap[tenSP + " " + mau];
+    
+    // Partial match
+    if (!url && artCode) {
       for (const key in imageMap) {
         if (key.includes(artCode) || artCode.includes(key)) {
-          matched = imageMap[key];
+          url = imageMap[key];
+          break;
+        }
+      }
+    }
+    if (!url && tenSP) {
+      for (const key in imageMap) {
+        if (key.includes(tenSP) || tenSP.includes(key)) {
+          url = imageMap[key];
           break;
         }
       }
     }
     
-    if (matched) {
-      detailSheet.getRange(i + 1, imgColIdx + 1).setValue(matched.thumbUrl);
-      matchCount++;
-    }
+    updates.push([url || ""]);
+    if (url) matchCount++;
+  }
+  
+  // Ghi tất cả một lần (nhanh hơn ghi từng dòng)
+  if (updates.length > 0) {
+    detailSheet.getRange(2, imgColIdx + 1, updates.length, 1).setValues(updates);
   }
   
   SpreadsheetApp.getUi().alert(
-    "✅ Hoàn tất!\n\n" +
-    "📁 Tổng ảnh trong folder: " + allImages.length + "\n" +
+    "✅ Match xong!\n\n" +
     "🔗 Đã match: " + matchCount + "/" + (detailData.length - 1) + " sản phẩm\n" +
-    "📋 Sheet data_images đã cập nhật."
+    "📋 Cột 'Hình ảnh' đã cập nhật."
   );
 }
 
 /**
- * Xem danh sách tất cả ảnh trong folder (debug)
+ * Debug: Xem danh sách folder con
  */
-function listAllImages() {
+function listSubFolders() {
   const folder = DriveApp.getFolderById(IMAGE_FOLDER_ID);
-  const files = folder.getFiles();
-  
+  const subs = folder.getFolders();
   let count = 0;
-  while (files.hasNext()) {
-    const file = files.next();
-    if (file.getMimeType().startsWith("image/")) {
-      count++;
-      Logger.log(count + ". " + file.getName() + " | ID: " + file.getId());
-    }
+  while (subs.hasNext()) {
+    const sub = subs.next();
+    count++;
+    Logger.log(count + ". " + sub.getName());
   }
-  Logger.log("Tổng: " + count + " ảnh");
-}
-
-/**
- * Lấy URL ảnh theo Art Code (dùng cho API)
- */
-function getImageByArtCode(artCode) {
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const imgSheet = ss.getSheetByName("data_images");
-  if (!imgSheet) return null;
-  
-  const data = imgSheet.getDataRange().getValues();
-  const searchKey = String(artCode).trim().toUpperCase();
-  
-  for (let i = 1; i < data.length; i++) {
-    const key = String(data[i][1]).trim().toUpperCase();
-    if (key === searchKey || key.includes(searchKey)) {
-      return {
-        imageUrl: data[i][3],
-        thumbUrl: data[i][4]
-      };
-    }
-  }
-  return null;
+  Logger.log("Tổng: " + count + " folder con");
 }
